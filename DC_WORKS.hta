@@ -1,0 +1,1842 @@
+<html>
+<head>
+<!-- https://stackoverflow.com/questions/19567887/javascript-version-in-hta -->
+<meta charset="UTF-16" http-equiv="X-UA-Compatible" content="IE=9" />
+<!--<font face="unifont" size=2>-->
+
+<title id="title"></title>
+<script>
+	var width = 1600, height = 900;
+	window.resizeTo(width, height);
+	window.moveTo((window.screen.width - width) / 2, (window.screen.height - height) / 5 + 2);
+	/**
+	 * http://www.openjs.com/scripts/events/keyboard_shortcuts/
+	 * Version : 2.01.B
+	 * By Binny V A
+	 * License : BSD
+	 */
+	shortcut = {
+		'all_shortcuts':{},//All the shortcuts are stored in this array
+		'add': function(shortcut_combination,callback,opt) {
+			//Provide a set of default options
+			var default_options = {
+				'type':'keydown',
+				'propagate':false,
+				'disable_in_input':false,
+				'target':document,
+				'keycode':false
+			}
+			if(!opt) opt = default_options;
+			else {
+				for(var dfo in default_options) {
+					if(typeof opt[dfo] == 'undefined') opt[dfo] = default_options[dfo];
+				}
+			}
+
+			var ele = opt.target;
+			if(typeof opt.target == 'string') ele = document.getElementById(opt.target);
+			var ths = this;
+			shortcut_combination = shortcut_combination.toLowerCase();
+
+			//The function to be called at keypress
+			var func = function(e) {
+				e = e || window.event;
+				
+				if(opt['disable_in_input']) { //Don't enable shortcut keys in Input, Textarea fields
+					var element;
+					if(e.target) element=e.target;
+					else if(e.srcElement) element=e.srcElement;
+					if(element.nodeType==3) element=element.parentNode;
+
+					if(element.tagName == 'INPUT' || element.tagName == 'TEXTAREA') return;
+				}
+		
+				//Find Which key is pressed
+				if (e.keyCode) code = e.keyCode;
+				else if (e.which) code = e.which;
+				var character = String.fromCharCode(code).toLowerCase();
+				
+				if(code == 188) character=","; //If the user presses , when the type is onkeydown
+				if(code == 190) character="."; //If the user presses , when the type is onkeydown
+
+				var keys = shortcut_combination.split("+");
+				//Key Pressed - counts the number of valid keypresses - if it is same as the number of keys, the shortcut function is invoked
+				var kp = 0;
+				
+				//Work around for stupid Shift key bug created by using lowercase - as a result the shift+num combination was broken
+				var shift_nums = {
+					"`":"~",
+					"1":"!",
+					"2":"@",
+					"3":"#",
+					"4":"$",
+					"5":"%",
+					"6":"^",
+					"7":"&",
+					"8":"*",
+					"9":"(",
+					"0":")",
+					"-":"_",
+					"=":"+",
+					";":":",
+					"'":"\"",
+					",":"<",
+					".":">",
+					"/":"?",
+					"\\":"|"
+				}
+				//Special Keys - and their codes
+				var special_keys = {
+					'esc':27,
+					'escape':27,
+					'tab':9,
+					'space':32,
+					'return':13,
+					'enter':13,
+					'backspace':8,
+		
+					'scrolllock':145,
+					'scroll_lock':145,
+					'scroll':145,
+					'capslock':20,
+					'caps_lock':20,
+					'caps':20,
+					'numlock':144,
+					'num_lock':144,
+					'num':144,
+					
+					'pause':19,
+					'break':19,
+					
+					'insert':45,
+					'home':36,
+					'delete':46,
+					'end':35,
+					
+					'pageup':33,
+					'page_up':33,
+					'pu':33,
+		
+					'pagedown':34,
+					'page_down':34,
+					'pd':34,
+		
+					'left':37,
+					'up':38,
+					'right':39,
+					'down':40,
+		
+					'f1':112,
+					'f2':113,
+					'f3':114,
+					'f4':115,
+					'f5':116,
+					'f6':117,
+					'f7':118,
+					'f8':119,
+					'f9':120,
+					'f10':121,
+					'f11':122,
+					'f12':123
+				}
+		
+				var modifiers = { 
+					shift: { wanted:false, pressed:false},
+					ctrl : { wanted:false, pressed:false},
+					alt  : { wanted:false, pressed:false},
+					meta : { wanted:false, pressed:false}	//Meta is Mac specific
+				};
+				
+				if(e.ctrlKey)	modifiers.ctrl.pressed = true;
+				if(e.shiftKey)	modifiers.shift.pressed = true;
+				if(e.altKey)	modifiers.alt.pressed = true;
+				if(e.metaKey)   modifiers.meta.pressed = true;
+				
+				for(var i=0; k=keys[i],i<keys.length; i++) {
+					//Modifiers
+					if(k == 'ctrl' || k == 'control') {
+						kp++;
+						modifiers.ctrl.wanted = true;
+
+					} else if(k == 'shift') {
+						kp++;
+						modifiers.shift.wanted = true;
+
+					} else if(k == 'alt') {
+						kp++;
+						modifiers.alt.wanted = true;
+					} else if(k == 'meta') {
+						kp++;
+						modifiers.meta.wanted = true;
+					} else if(k.length > 1) { //If it is a special key
+						if(special_keys[k] == code) kp++;
+						
+					} else if(opt['keycode']) {
+						if(opt['keycode'] == code) kp++;
+
+					} else { //The special keys did not match
+						if(character == k) kp++;
+						else {
+							if(shift_nums[character] && e.shiftKey) { //Stupid Shift key bug created by using lowercase
+								character = shift_nums[character]; 
+								if(character == k) kp++;
+							}
+						}
+					}
+				}
+				
+				if(kp == keys.length && 
+							modifiers.ctrl.pressed == modifiers.ctrl.wanted &&
+							modifiers.shift.pressed == modifiers.shift.wanted &&
+							modifiers.alt.pressed == modifiers.alt.wanted &&
+							modifiers.meta.pressed == modifiers.meta.wanted) {
+					callback(e);
+		
+					if(!opt['propagate']) { //Stop the event
+						//e.cancelBubble is supported by IE - this will kill the bubbling process.
+						e.cancelBubble = true;
+						e.returnValue = false;
+		
+						//e.stopPropagation works in Firefox.
+						if (e.stopPropagation) {
+							e.stopPropagation();
+							e.preventDefault();
+						}
+						return false;
+					}
+				}
+			}
+			this.all_shortcuts[shortcut_combination] = {
+				'callback':func, 
+				'target':ele, 
+				'event': opt['type']
+			};
+			//Attach the function with the event
+			if(ele.addEventListener) ele.addEventListener(opt['type'], func, false);
+			else if(ele.attachEvent) ele.attachEvent('on'+opt['type'], func);
+			else ele['on'+opt['type']] = func;
+		},
+
+		//Remove the shortcut - just specify the shortcut and I will remove the binding
+		'remove':function(shortcut_combination) {
+			shortcut_combination = shortcut_combination.toLowerCase();
+			var binding = this.all_shortcuts[shortcut_combination];
+			delete(this.all_shortcuts[shortcut_combination])
+			if(!binding) return;
+			var type = binding['event'];
+			var ele = binding['target'];
+			var callback = binding['callback'];
+
+			if(ele.detachEvent) ele.detachEvent('on'+type, callback);
+			else if(ele.removeEventListener) ele.removeEventListener(type, callback, false);
+			else ele['on'+type] = false;
+		}
+	}
+	
+	
+	shortcut.add("ALT+F", function() {
+		if (FeishuUsingWeb)
+			ExplorerAHK("Edge_Feishu");
+		else
+			ExplorerAHK("Desktop_Feishu");
+	});
+	shortcut.add("ALT+M", function() {
+		if (FeishuUsingWeb)
+			ExplorerAHK("Edge_Feishu_Mail");
+		else
+			ExplorerAHK("Desktop_Feishu_Mail");
+	});
+	shortcut.add("ALT+W", function() {
+		ExplorerAHK("Edge_WhatsApp");
+	});
+	shortcut.add("ALT+S", function() {
+		ExplorerAHK("Edge_Skype");
+	});
+	shortcut.add("ALT+X", function() {
+		ExplorerAHK("VMware_Wechat");
+	});
+	shortcut.add("ALT+P", function() {
+		ExplorerAHK("Edge_DC_Push");
+	});
+	shortcut.add("ALT+D", function() {
+		ExplorerAHK("Edge_DC_Devices");
+	});
+	shortcut.add("ALT+G", function() {
+		ExplorerAHK("Edge_ChatGPT")
+	});
+	shortcut.add("CTRL+P", function() {
+		scroll_elem_into_view("pref");
+	});
+	shortcut.add("CTRL+D", function() {
+		scroll_elem_into_view("docs");
+	});
+	shortcut.add("CTRL+N", function() {
+		scroll_elem_into_view("notes");
+	});
+	shortcut.add("CTRL+O", function() {
+		scroll_elem_into_view("overseas");
+	});
+	shortcut.add("CTRL+S", function() {
+		scroll_elem_into_view("speaker");
+	});
+	shortcut.add("CTRL+T", function() {
+		scroll_elem_into_view("terminal");
+	});
+	shortcut.add("CTRL+U", function() {
+		scroll_elem_into_view("utils");
+	});
+	shortcut.add("CTRL+6", function() {
+		scroll_elem_into_view("pos6");
+	});
+	
+	shortcut.add("CTRL+ALT+M", function() {
+		if (DeviceManagerMinimized == 1)
+			RBTray_Restore("Device Manager");
+		else
+			RBTray_Minimize("Device Manager");
+		
+		DeviceManagerMinimized ^= 1;
+	});
+	shortcut.add("CTRL+ALT+N", function() {
+		if (NPPMinimized == 1)
+			RBTray_Restore_By_Class("Notepad++");
+		else
+			RBTray_Minimize_By_Class("Notepad++");
+		
+		NPPMinimized ^= 1;
+	});
+	//shortcut.add("CTRL+ALT+U", function() {
+	//	if (USBTreeViewMinimized == 1)
+	//		RBTray_Restore("USB Device Tree Viewer V3.8.9");
+	//	else
+	//		RBTray_Minimize("USB Device Tree Viewer V3.8.9");
+	//	
+	//	USBTreeViewMinimized ^= 1;
+	//});
+	shortcut.add("CTRL+ALT+V", function() {
+		if (VMPlayerMinimized == 1)
+			RBTray_Restore_By_Class("VMPlayerFrame");
+		else
+			RBTray_Minimize_By_Class("VMPlayerFrame");
+		
+		VMPlayerMinimized ^= 1;
+	});
+	//shortcut.add("ESC", function() {
+	//	Minimize();
+	//});
+	
+	/*
+	shortcut.add("F5", function() {
+		window.location.reload(true);
+		//hta_onunload();
+		//hta_onload();
+	});
+	*/
+	
+	
+	
+<!-- https://docs.microsoft.com/en-us/previous-versions/tn-archive/ee692768(v=technet.10) -->
+</script>
+
+<hta:application // This block does not allow lines begin with "//", "//" can only be present after valid values
+	applicationname="梁罡的动联日志"
+	border="Dialog"
+	borderstyle="normal"
+	caption="yes"
+	contextmenu="no" // contextmenu="yes"
+	icon="DC_WORKS.ico"
+	id="DC_WORKS"
+	innerborder="no"
+	maximizebutton="no"
+	minimizebutton="yes"
+	navigable="yes"
+	scroll="auto"
+	scrollflat="yes"
+	selection="yes"
+	showintaskbar="yes"
+	singleinstance="yes"
+	sysmenu="yes"
+	version="1.0"
+	windowstate="normal"
+/>
+<style type="text/css">
+a
+{
+	text-decoration:underline;
+	cursor:pointer;
+}
+b
+{
+	/* font-size:120%; */
+}
+span
+{
+	/* position: absolute */;
+	/* left: 200px */;
+	/* left: 100px */;
+	position: relative;
+}
+body
+{
+	/* font-family: MS Shell Dlg; */
+	font-family: Microsoft JhengHei;
+	font-size: 9pt;
+}
+button
+{
+	border: 1px solid;
+	/* border: none; */
+	border-color: #ADADAD;
+	/* background: #E1E1E1; */
+	background: #F0F0F0;
+	color: #000000;
+	/* text-align: center; */
+	/* line-height: 15px; */
+	/* outline: none; */
+	/* box-shadow: none; */
+	/* border-radius: 0px; */
+	font-family: Tahoma;
+	/* font-family: MS Shell Dlg; */
+	font-size: 9pt;
+}
+textarea
+{
+	font-family: consolas;
+}
+/* https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/table */
+thead,
+tfoot
+{
+	/* background-color: #000333; */
+	background-color: #333;
+	/* background-color: #0178D6; */
+	color: #FFF;
+}
+table
+{
+	border: none;
+	/* font-family: MS Shell Dlg; */
+	/* font-size: 9pt; */
+}
+td
+{
+}
+input
+{
+	width: 500px;
+	border: 0;
+	/* font-family: Tahoma; */
+	font-family: MS Shell Dlg;
+	font-size: 9pt;
+	color: #2222E0;
+	background: #E0E0E0;
+}
+.refico32
+{
+	max-height: 32px;
+	max-width: 32px;
+}
+.refico24
+{
+	max-height: 24px;
+	max-width: 24px;
+}
+.refico16
+{
+	max-height: 16px;
+	max-width: 16px;
+}
+.refico12
+{
+	max-height: 12px;
+	max-width: 12px;
+}
+.refimg
+{
+	max-width: 70%;
+	// max-height: 300px;
+	// max-width: 500px;
+}
+
+.leadbutton
+{
+	height: 18px;
+	background: #FFFFFF;
+	color: #000000;
+}
+
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_switch */
+.switch {
+	position: relative;
+	display: inline-block;	
+	width: 26px;
+	height: 17px;
+}
+
+.switch input { 
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 13px;
+	width: 13px;
+	left: 2px;
+	bottom: 2px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+input:checked + .slider {
+	/* background-color: #2196F3; */
+	/* background-color: #050505; */
+	background-color: #333;
+}
+
+input:focus + .slider {
+	/* box-shadow: 0 0 1px #2196F3; */
+	box-shadow: 0 0 1px #333;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(9px);
+	-ms-transform: translateX(9px);
+	transform: translateX(9px);
+}
+/* Rounded sliders */
+.slider.round {
+	border-radius: 13px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+/*
+.dropright {
+	position: relative;
+}
+.dropbtn {
+	background: #F0F0F0;
+}
+.dropright:hover .dropright-content {
+	display: block;
+}
+.dropright-content {
+	display: none;
+	position: absolute;
+	z-index: 1;
+}
+.dropright-content button {
+	display: block;
+	padding: 12px 16px;
+}
+*/
+</style>
+</head>
+<script language="VBScript">
+On Error Resume Next
+Set ObjShell = CreateObject("WScript.Shell")
+Set ObjApplication = CreateObject("Shell.Application")
+Set ObjFS = CreateObject("Scripting.FileSystemObject")
+
+Const HKCR = &H80000000
+Const HKCU = &H80000001
+Const HKLM = &H80000002
+Const HKUS = &H80000003
+Const HKCC = &H80000005
+
+
+' ScriptDIR = ObjFS.GetFolder(".")
+' ScriptDIR = ObjFS.GetParentFolderName(ObjShell.ScriptFullName)
+' ScriptDIR = ObjShell.CurrentDirectory
+ScriptFullName = window.document.location.pathname
+' MsgBox ScriptDIR
+ScriptDIR = ObjFS.GetParentFolderName(ScriptFullName)
+SystemDrive= ObjShell.Environment("PROCESS").Item("SystemDrive")
+SystemRoot = ObjShell.Environment("PROCESS").Item("SystemRoot")
+ProcessorArch = ObjShell.Environment("PROCESS").Item("PROCESSOR_ARCHITECTURE")
+SysWOW64DIR = SystemRoot & "\SysWOW64"
+ProgramFilesDIR = ObjShell.Environment("PROCESS").Item("ProgramFiles")
+ProgramFilesx86DIR = ObjShell.Environment("PROCESS").Item("ProgramFiles(x86)")
+' AHKDefaultEXE = ObjShell.Environment("PROCESS").Item("ProgramFiles") & "\AutoHotkey\AutoHotkey.exe"
+AHKDefaultEXE = ProgramFilesDIR & "\AutoHotkey\AutoHotkey.exe"
+' AHKDefaultDIR = ObjShell.Environment("PROCESS").Item("ProgramFiles") & "\AutoHotkey\"
+AHKDefaultDIR = ProgramFilesDIR & "\AutoHotkey\"
+HideS165xxMidVersions = 0
+TextContent = 0
+DeviceManagerMinimized = 1
+NPPMinimized = 1
+VMPlayerMinimized = 1
+' USBTreeViewMinimized = 1
+FeishuUsingWeb = 1
+
+' MsgBox SysWOW64DIR
+' MsgBox ObjShell.Environment("SYSTEM").Item("WINDIR")
+' MsgBox ObjShell.Environment("PROCESS").Item("WINDIR")
+' ObjShell.CurrentDirectory = ObjShell.ExpandEnvironmentStrings("%WINDIR%\SYSWOW64")
+' MsgBox ObjShell.CurrentDirectory
+
+Sub Exec(CMD,Local)
+	If Local = -1 Then
+		ObjShell.Exec Chr(&H22) & ScriptDIR & "\" & CMD & Chr(&H22)
+	Else
+		ObjShell.Exec CMD
+	End If
+End Sub
+Sub ExecLocaleZhTW(Path, Params)
+	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas 1bdfb941-7ab1-426e-b4d1-38321fc6ce1e """ &  ScriptDIR & "\" & Path & """ " & Params
+End Sub
+Sub ExecLocaleZhCN(Path, Params)
+	' ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas c9579ff9-4b15-445f-a6fd-bc4b12d238c3 " & Chr(&H22) &  ScriptDIR & "\" & Path & """ " & Params
+	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas c9579ff9-4b15-445f-a6fd-bc4b12d238c3 """ &  ScriptDIR & "\" & Path & """ " & Params
+End Sub
+Sub Run(CMD)
+	' ObjShell.Exec CMD
+	ObjShell.Run CMD, , True
+	' ObjApplication.ShellExecute CMD, "", ObjShell.ExpandEnvironmentStrings("%WINDIR%\System32"), "runas", 1
+End Sub
+Sub RBTray_Restore(WinTitle)
+	ObjShell.Exec "A:\APPs\RBTray\64bit\RBTray.exe --restore " + Chr(&H22) + WinTitle + Chr(&H22)
+End Sub
+Sub RBTray_Minimize(WinTitle)
+	ObjShell.Exec "A:\APPs\RBTray\64bit\RBTray.exe --minimize " + Chr(&H22) + WinTitle + Chr(&H22)
+End Sub
+Sub RBTray_Restore_By_Class(ClassName)
+	ObjShell.Exec "A:\APPs\RBTray\64bit\RBTray.exe --restore NULL " + Chr(&H22) + ClassName + Chr(&H22)
+End Sub
+Sub RBTray_Minimize_By_Class(ClassName)
+	ObjShell.Exec "A:\APPs\RBTray\64bit\RBTray.exe --minimize NULL " + Chr(&H22) + ClassName + Chr(&H22)
+End Sub
+Sub ExplorerURL(URL)
+	ObjShell.Exec "explorer.exe " & URL
+End Sub
+Sub ExplorerFTP(SiteName)
+	' filezilla -c "0/DC/S11_4XX"
+	' ObjShell.Exec Chr(&H22) & ProgramFilesDIR & "\FileZilla FTP Client\filezilla.exe" & Chr(&H22) & " -c 0/DC/" & SiteName
+	ObjShell.Exec ScriptDIR & "\APPs\FileZilla-3.66.4\filezilla.exe -c 0/DC/" & SiteName
+End Sub
+Sub ExplorerNotepad(FilePath)
+	' MsgBox "notepad.exe " & ScriptDIR & "\" & FilePath
+	ObjShell.Exec "notepad.exe " & ScriptDIR & "\" & FilePath
+End Sub
+Sub ExplorerRegistryWithLastKey(LastKeyPath) ' "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings"
+	ObjShell.Run "CMD.exe /C REG ADD ""HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Applets\Regedit"" /v LastKey /t REG_SZ /d """ & LastKeyPath & """ /f", 0, False
+	ObjShell.Exec "regedit.exe"
+End Sub
+
+Sub ExplorerCMDWithLaunchDIR(LaunchDIR)
+	ObjShell.Run "CMD.exe /K CD /D " & ScriptDIR & "\" & LaunchDIR
+End Sub
+Sub ExplorerMSYS2WithLaunchDIR(LaunchDIR) ' https://www.msys2.org/docs/terminals/
+	' msys2_shell.cmd -msys2 -where "D:\DC_WORKS\Overseas_Projects"
+	ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell.cmd -msys2 -where " & ScriptDIR & "\" & LaunchDIR, 0, False
+End Sub
+Sub ExplorerAHK(AHKFilePath)
+	' ObjShell.Exec Chr(&H22) & ProgramFilesDIR & "\AutoHotkey\AutoHotkey.exe" & Chr(&H22) & " " & ScriptDIR & "\" & AHKFilePath
+	ObjShell.Exec Chr(&H22) & ProgramFilesDIR & "\AutoHotkey\AutoHotkey.exe" & Chr(&H22) & " " & ScriptDIR & "\AHK\" & AHKFilePath & ".ahk"
+End Sub
+Sub ExplorerSrcBrowserVS(DIR)
+	' "E:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.exe" "F:\_____\S11-423_APP_15226\S11-423" source:JumpList
+	' ObjShell.Exec Chr(&H22) & "A:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" & Chr(&H22) & " " & ScriptDIR & "\" & DIR & " source:JumpList"
+	ObjShell.Exec Chr(&H22) & ProgramFilesDIR & "\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe" & Chr(&H22) & " " & ScriptDIR & "\" & DIR & " source:JumpList"
+	'ObjShell.Exec Chr(&H22) & "E:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.exe" & Chr(&H22) & " " & ScriptDIR & "\" & DIR & " source:JumpList"
+End Sub
+Sub ExplorerSrcBrowserUND(DIR)
+	' "C:\Program Files\SciTools\bin\pc-win64\understand.exe" S11-423.und
+	ArrUNDSplitResult = Split(DIR, "\")
+	' MsgBox DIR
+	' MsgBox UBound(ArrUNDSplitResult) + 1
+	
+	DIR = DIR & "\" & ArrUNDSplitResult(UBound(ArrUNDSplitResult)) & ".und"
+	'MsgBox DIR
+	
+	ObjShell.Exec Chr(&H22) & ProgramFilesDIR & "\SciTools\bin\pc-win64\understand.exe" & Chr(&H22) & " " & ScriptDIR & "\" & DIR
+	' ObjApplication.ShellExecute "C:\Program Files\SciTools\bin\pc-win64\understand.exe", ScriptDIR & "\" & DIR, ScriptDIR, "open", 3
+End Sub
+Sub ExplorerLocal(FilePath)
+	' Without spaces around path, explorer.exe still works normally
+	' MsgBox "explorer.exe " & Chr(&H22) & ScriptDIR & "\" & FilePath & Chr(&H22)
+	' ObjShell.Exec "explorer.exe " & Chr(&H22) & ScriptDIR & "\" & FilePath & Chr(&H22)
+	ObjShell.Exec "explorer.exe " & ScriptDIR & "\" & FilePath
+End Sub
+Sub ExplorerXYplorer(Path)
+	ObjShell.Exec ProgramFilesx86DIR & "\XYplorer\XYplorer.exe " & ScriptDIR & "\" & Path
+End Sub
+Sub ExplorerAHKNppFileEncodingConvert(FilePath, ApplicationPath)
+	' Write FilePath to A:\APPs\Notepad++\plugins\PythonScript\scripts\convert_files_encoding_to_utf8_without_bom.py.ini
+	
+	' .OpenTextFile(strFile [,IOMode (8=append, 1=Read, 2=Write) [,Create (True/False) [,Format (0=Ascii, -1=Unicode, -2=default)]]])
+	' MsgBox SystemDrive
+	Set ConvIniFile = ObjFS.OpenTextFile(SystemDrive & "\APPs\Notepad++\plugins\PythonScript\scripts\convert_files_encoding_to_utf8_without_bom.py.ini", 2, True)
+	
+	' Write Application Folder Path
+	' ConvIniFile.WriteLine(ScriptDIR & "\" & FilePath + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application")
+	ConvIniFile.WriteLine(ScriptDIR & "\" & ApplicationPath)
+	ConvIniFile.Close
+	
+	ExplorerShellExecute "NppPythonScriptEncodingConv.ahk", "", -1, "open", 1
+End Sub
+Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
+	If ProjectType = "S11_5XX" Then
+		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib'; pwd; if ^[ ^! -e '*.obj' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.obj`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`;""", 0, True
+		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib\current_target")
+		If TargetResultFile.Size = 0 Then
+			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			
+		Else
+			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib\current_target", 1, False)
+			TargetResultObjFileName = TargetResultFileHandle.ReadLine
+			TargetResultFileHandle.Close
+			Set TargetResultFileHandle = Nothing
+			
+			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib"
+			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+		End If
+		Set TargetResultFile = Nothing
+	ElseIf ProjectType = "S16_4XX" Then
+		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib'; if ^[ ^! -e '*.o' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.o`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
+		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib\current_target")
+		If TargetResultFile.Size = 0 Then
+			' alert("empty")
+			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			
+		Else
+			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib\current_target", 1, False)
+			TargetResultObjFileName = TargetResultFileHandle.ReadLine
+			TargetResultFileHandle.Close
+			Set TargetResultFileHandle = Nothing
+			' alert("found")
+			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib"
+			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+		End If
+		Set TargetResultFile = Nothing
+	ElseIf ProjectType = "S16_5XX" Then
+		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib'; if ^[ ^! -e '*.obj' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.obj`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
+		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib\current_target")
+		If TargetResultFile.Size = 0 Then
+			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			
+		Else
+			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib\current_target", 1, False)
+			TargetResultObjFileName = TargetResultFileHandle.ReadLine
+			TargetResultFileHandle.Close
+			Set TargetResultFileHandle = Nothing
+			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib"
+			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+		End If
+		Set TargetResultFile = Nothing
+	ElseIf ProjectType = "S17_123" Then
+		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\App Source\Lib'; if ^[ ^! -e '*.o' ^]; then ar x S17_Lib.lib; fi; for i in `ls *.o`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
+		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\App Source\Lib\current_target")
+		If TargetResultFile.Size = 0 Then
+			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			
+		Else
+			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\App Source\Lib\current_target", 1, False)
+			TargetResultObjFileName = TargetResultFileHandle.ReadLine
+			TargetResultFileHandle.Close
+			Set TargetResultFileHandle = Nothing
+			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\App Source\Lib"
+			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+		End If
+		Set TargetResultFile = Nothing
+	End If
+End Sub
+Sub ExplorerShellExecute(Path, Params, DIR, Verb, Window)
+	' Path          The file to execute (required)
+	' parameters    Arguments for the executable
+	' dir           Working directory
+	' verb          The operation to execute (runas/open/edit/print)
+	' window        View mode application window (normal=1, hide=0, 2=Min, 3=max, 4=restore, 5=current, 7=min/inactive, 10=default)
+	
+	If DIR = -1 Then
+		ObjApplication.ShellExecute Path, Params, ScriptDIR, Verb, Window
+	Else
+		ObjApplication.ShellExecute Path, Params, ScriptDIR & "\" & DIR, Verb, Window
+	End If
+End Sub
+Sub ExplorerSelect(FilePath)
+	ObjShell.Exec "explorer.exe /select," & ScriptDIR & "\" & FilePath
+End Sub
+Sub MPCWithPosition(FilePath, StartPosition)
+	CMD = Chr(&H22) & ProgramFilesDIR & "\MPC-HC\mpc-hc64.exe" & Chr(&H22) & " " & Chr(&H22) & ScriptDIR & "\" & FilePath & Chr(&H22) & " /play /startpos " & StartPosition
+	' MsgBox CMD
+	ObjShell.Exec CMD
+	' ObjShell.Exec ProgramFilesDIR & "\MPC-HC\mpc-hc64.exe " & ScriptDIR & "\" & FilePath & " /startpos " & StartPosition
+End Sub
+Sub RunCPL(CPLName, Verb)
+	ObjShell.Exec "rundll32.exe " & CPLName & "," & Verb
+End Sub
+Sub SystemProperties(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL sysdm.cpl,," & NthTab
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen System Properties"
+End Sub
+Sub DesktopIcons(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL desk.cpl,," & NthTab
+End Sub
+Sub InternetProperties(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL inetcpl.cpl,," & NthTab
+	' ObjShell.Run "sleep 1", , True
+	' ObjShell.Run "Timeout /T 1 /NOBREAK", 0, True
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Internet Properties"
+End Sub
+Sub Region(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL intl.cpl,," & NthTab
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Region"
+End Sub
+Sub Sound(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL mmsys.cpl,," & NthTab
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Sound"
+End Sub
+Sub MouseProperties(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL main.cpl,," & NthTab
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Mouse Properties"
+End Sub
+Sub KeyboardProperties(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL main.cpl,@1," & NthTab
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Keyboard Properties"
+End Sub
+Sub Programs(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL appwiz.cpl,," & NthTab
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Programs"
+End Sub
+Sub NetworkConnections()
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL ncpa.cpl" ' Network Control Panel Applet
+End Sub
+Sub SecurityandMaintenance()
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL wscui.cpl"
+End Sub
+Sub DateTime(NthTab)
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL timedate.cpl,," & NthTab
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Date and Time"
+End Sub
+Sub LocationInformation()
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL telephon.cpl"
+	' ObjShell.Run "PING -n 2 localhost.localdomain", 0, True
+	' ObjShell.Exec "cen Location Information"
+End Sub
+' ========================== MMC ==========================
+Sub AuthorizationManager()
+	ObjShell.Exec "mmc.exe azman.msc"
+End Sub
+Sub Certificates_LocalComputer()
+	ObjShell.Exec "mmc.exe certlm.msc"
+End Sub
+Sub CertificateManager()
+	ObjShell.Exec "mmc.exe certmgr.msc"
+End Sub
+Sub ComponentServices()
+	ObjShell.Exec "mmc.exe comexp.msc"
+End Sub
+Sub ComputerManagement()
+	ObjShell.Exec "mmc.exe compmgmt.msc"
+End Sub
+Sub DeviceManager()
+	' ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL hdwwiz.cpl"
+	ObjShell.Exec "mmc.exe devmgmt.msc"
+End Sub
+Sub DevModeRunAsUserConfig_StartMenuandTaskbar()
+	ObjShell.Exec "mmc.exe DevModeRunAsUserConfig.msc"
+End Sub
+Sub DiskManagement()
+	ObjShell.Exec "mmc.exe diskmgmt.msc"
+End Sub
+Sub EventViewer()
+	ObjShell.Exec "mmc.exe eventvwr.msc"
+End Sub
+Sub SharedFolders()
+	ObjShell.Exec "mmc.exe fsmgmt.msc"
+End Sub
+Sub LocalGroupPolicyEditor()
+	ObjShell.Exec "mmc.exe gpedit.msc"
+End Sub
+Sub LocalUsersGroups()
+	ObjShell.Exec "mmc.exe lusrmgr.msc"
+End Sub
+Sub PrintManagement()
+	ObjShell.Exec "mmc.exe printmanagement.msc"
+End Sub
+Sub ResultantSetofPolicy()
+	ObjShell.Exec "mmc.exe rsop.msc"
+End Sub
+Sub LocalSecurityPolicy()
+	ObjShell.Exec "mmc.exe secpol.msc"
+End Sub
+Sub Services()
+	ObjShell.Exec "mmc.exe services.msc"
+End Sub
+Sub TaskScheduler()
+	ObjShell.Exec "mmc.exe taskschd.msc"
+End Sub
+Sub TrustedPlatformModuleManagement()
+	ObjShell.Exec "mmc.exe tpm.msc"
+End Sub
+
+Sub WindowsFirewall()
+	' ObjShell.Exec "mmc.exe wf.msc"
+	ObjShell.Exec "rundll32.exe Shell32.dll,Control_RunDLL Firewall.cpl"
+End Sub
+Sub WindowsDefenderFirewallwithAdvancedSecurity()
+	ObjShell.Exec "mmc.exe wf.msc"
+End Sub
+Sub WMI_Control()
+	ObjShell.Exec "mmc.exe WmiMgmt.msc"
+End Sub
+
+Sub CloseMonitor()
+	If ObjFS.FileExists(ScriptDIR & "\CloseMonitor.exe") = True Then
+		ObjShell.Exec ScriptDIR & "\CloseMonitor.exe"
+	Else
+		ObjShell.Exec "CloseMonitor.exe"
+	End If
+End Sub
+
+Sub Minimize() 'Minimize this HTA window
+	' ObjShell.Exec ScriptDIR & "\Win10LegacySettingsLauncher.exe --minimize"
+	
+	If ProcessorArch = "AMD64" Then
+		ObjShell.Exec ScriptDIR & "\Win10LegacySettingsLauncher64.exe --minimize"
+	ElseIf ProcessorArch = "X86" Or ProcessorArch = "x86" Then
+		ObjShell.Exec ScriptDIR & "\Win10LegacySettingsLauncher32.exe --minimize"
+	End If
+End Sub
+Sub Calc()
+	ObjShell.Exec "calc.exe"
+End Sub
+Sub RegEdit()
+	ObjShell.Exec "regedit.exe"
+End Sub
+Sub CharacterMap()
+	ObjShell.Exec "charmap.exe"
+End Sub
+Sub UpdateIconCache()
+	ObjShell.Exec "ie4uinit.exe -show"
+End Sub
+Sub CenterWindow(WindowTitile)
+	If ObjFS.FileExists(ScriptDIR & "\CenterWindow.exe") = True Then
+		ObjShell.Exec ScriptDIR & "\CenterWindow.exe """ & WindowTitile & """"
+	Else
+		ObjShell.Exec "CenterWindow.exe """ & WindowTitile & """"
+	End If
+	' ObjShell.Exec "cen.exe " & WindowTitile
+End Sub
+Sub IExpress()
+	ObjShell.Exec "iexpress.exe"
+End Sub
+Sub IExpressHelp()
+	ObjShell.Exec "iexpress.exe /?"
+End Sub
+Sub MSPaint()
+	ObjShell.Exec "mspaint.exe"
+End Sub
+Sub DiskCleanup()
+	ObjShell.Exec "cleanmgr.exe"
+End Sub
+Sub DiskCleanupHelp()
+	ObjShell.Exec "cleanmgr.exe /?"
+End Sub
+Sub SnippingTool()
+	ObjShell.Exec "SnippingTool.exe"
+End Sub
+Sub NotepadX86()
+	If ObjFS.FolderExists(SysWOW64DIR) = True Then
+		ObjShell.Exec SysWOW64DIR & "\notepad.exe"
+	End If
+End Sub
+Sub Perfmon()
+	ObjShell.Exec "perfmon.exe"
+	' ObjShell.Exec "mmc.exe perfmon.msc"
+End Sub
+Sub Resmon()
+	ObjShell.Exec "perfmon.exe /res"
+End Sub
+Sub GodMode()
+	ObjShell.Exec "explorer.exe shell:::{ED7BA470-8E54-465E-825C-99712043E01C}"
+End Sub
+Function AHKSpyExists()
+	AHKSpyExists = ObjFS.FileExists(AHKDefaultEXE)
+End Function
+Sub AHKSpy()
+	If ObjFS.FileExists(AHKDefaultEXE) = True Then
+		' ObjShell.Exec AHKDefaultEXE & " WindowSpy.ahk"
+		' Using "" to represent a single " in VBScript
+		ObjShell.Exec AHKDefaultEXE & " """ & AHKDefaultDIR & "WindowSpy.ahk"""
+	End If
+End Sub
+Sub RemoteDesktop()
+	ObjShell.Exec "MSTSC.exe"
+End Sub
+Sub RemoteDesktopHelp()
+	ObjShell.Exec "MSTSC.exe /?"
+End Sub
+Sub MSConfig()
+	ObjShell.Exec "MSConfig.exe"
+End Sub
+Sub HTMLHelp()
+	ObjShell.Exec "hh.exe /?/"
+End Sub
+
+
+
+Function QueryRegistryValueAsString(sFullKeyPath)
+	ValueString = ObjShell.RegRead(sFullKeyPath)
+	If Err.Number <> 0 Then ' an error occurred
+		QueryRegistryValueAsString = ""
+	Else ' normal case
+		QueryRegistryValueAsString = ValueString
+	End If
+End Function
+
+Function WriteRegistryValue(sFullKeyPath, Value, sType)
+	ObjShell.RegWrite sFullKeyPath, Value, sType
+End Function
+
+
+Function IsKeyExistent(sComputer, sKeyRoot, sKeyPath)
+	Set ObjRegistry = GetObject("winmgmts:\\" & sComputer & "\root\default:StdRegProv")
+	' If ObjRegistry.EnumKey(sKeyRoot, sKeyPath, aSubKeys) = 0 Then
+	If ObjRegistry.EnumKey(sKeyRoot, sKeyPath) = 0 Then
+		IsKeyExistent = True
+	Else
+		IsKeyExistent = False
+	End If
+End Function
+
+Function CreateRegistryKey(sComputer, sNewKeyRoot, sNewKeyPath)
+	' sComputer = "."
+	Set ObjRegistry = GetObject("winmgmts:\\" & sComputer & "\root\default:StdRegProv")
+
+	' Choose sNewKeyRoot from HKCU, HKLM, ..
+	' Const HKCU = &H80000001
+	' Const HKLM = &H80000002
+	' Add "Persionalization" to This PC
+	' sNewKeyPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{ED834ED6-4B5A-4bfe-8F11-A626DCB6A921}"
+
+	ObjRegistry.CreateKey sNewKeyRoot, sNewKeyPath
+End Function
+
+Function DeleteRegistryKey(sComputer, sNewKeyRoot, sNewKeyPath)
+	Set ObjRegistry = GetObject("winmgmts:\\" & sComputer & "\root\default:StdRegProv")
+	ObjRegistry.DeleteKey sNewKeyRoot, sNewKeyPath
+End Function
+
+Function AddItemToMyComputer(sCLSID, sComment)
+	' CreateRegistryKey ".", &H80000002, "SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\" & sCLSID
+	CreateRegistryKey ".", HKLM, "SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\" & sCLSID
+End Function
+
+Function RemoveItemFromMyComputer(sCLSID, sComment)
+	DeleteRegistryKey ".", HKLM, "SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\" & sCLSID
+End Function
+
+Sub Tray32()
+	ObjShell.Exec ScriptDIR & "\Win10LegacySettingsTray32.exe"
+End Sub
+Sub Tray64()
+	ObjShell.Exec ScriptDIR & "\Win10LegacySettingsTray64.exe"
+End Sub
+Sub ExitTray32()
+	ObjShell.Exec ScriptDIR & "\Win10LegacySettingsTray32.exe --exit"
+End Sub
+Sub ExitTray64()
+	ObjShell.Exec ScriptDIR & "\Win10LegacySettingsTray64.exe --exit"
+End Sub
+
+Function ReadAllFromTextFile(TextPath)
+	' .OpenTextFile(strFile [,IOMode (8=append, 1=Read, 2=Write) [,Create (True/False) [,Format (0=Ascii, -1=Unicode, -2=default)]]])
+	
+	If TextPath = "" Then
+		ReadAllFromTextFile = ""
+	Else
+		Set File = ObjFS.OpenTextFile(ScriptDIR & "\" & TextPath, 1, False)
+		ReadAllFromTextFile = File.ReadAll
+		File.Close
+	End If
+End Function
+
+'1st line = sel_hide_s16_5xx_mid_versions (1 = Yes; 0 = No)
+'
+'
+'
+'
+Sub ReadConfigFile()
+	' .OpenTextFile(strFile [,IOMode (8=append, 1=Read, 2=Write) [,Create (True/False) [,Format (0=Ascii, -1=Unicode, -2=default)]]])
+	Set ConfigFile = ObjFS.OpenTextFile(ScriptDIR & "\DC_WORKS.ini", 1, False)
+	
+	HideS165xxMidVersions = ConfigFile.ReadLine
+	
+	' Do While Not ConfigFile.AtEndOfStream
+	' 	line = ConfigFile.ReadLine
+	' Loop
+	
+	ConfigFile.Close
+End Sub
+
+Sub WriteConfigFile()
+	' .OpenTextFile(strFile [,IOMode (8=append, 1=Read, 2=Write) [,Create (True/False) [,Format (0=Ascii, -1=Unicode, -2=default)]]])
+	Set ConfigFile = ObjFS.OpenTextFile(ScriptDIR & "\DC_WORKS.ini", 2, True)
+	
+	ConfigFile.WriteLine(HideS165xxMidVersions)
+	
+	ConfigFile.Close
+End Sub
+</script>
+
+<script>
+function hta_onload()
+{
+	if (ProcessorArch == "AMD64")
+	{
+		//Tray64();
+	}
+	else if (ProcessorArch == "X86" || ProcessorArch == "x86")
+	{
+		//Tray32();
+	}
+	ReadConfigFile();
+	// alert("HideS165xxMidVersions = " + HideS165xxMidVersions);
+	
+	mid_versions = document.getElementsByName("mid_versions");
+	sel_hide_s16_5xx_mid_versions = document.getElementById("sel_hide_s16_5xx_mid_versions");
+	
+	if (HideS165xxMidVersions == 1)
+	{
+		document.getElementById("sel_hide_s16_5xx_mid_versions_yes").setAttribute("selected", "");
+		
+		for (i = 0; i < mid_versions.length; ++i)
+		{
+			mid_versions[i].setAttribute("hidden", "");
+		}
+	}
+	else
+	{
+		document.getElementById("sel_hide_s16_5xx_mid_versions_no").setAttribute("selected", "");
+		
+		for (i = 0; i < mid_versions.length; ++i)
+		{
+			mid_versions[i].removeAttribute("hidden");
+		}
+	}
+	
+	document.getElementById("title").text = Math.floor(Math.random() * 3) == 0 ? "梁罡的 DC 索引" : "罡哥的 DC 索引";
+	
+	FeishuUsingWeb = document.getElementById("feishu_using_web").checked;
+}
+function hta_onunload()
+{
+	if (ProcessorArch == "AMD64")
+	{
+		//ExitTray64();
+	}
+	else if (ProcessorArch == "X86" || ProcessorArch == "x86")
+	{
+		//ExitTray32();
+	}
+}
+function scroll_elem_into_view(id)
+{
+	document.getElementById(id).scrollIntoView();
+}
+function update_config_select_prefs_hide_s16_5xx_mid_versions()
+{
+	sel_hide_s16_5xx_mid_versions = document.getElementById("sel_hide_s16_5xx_mid_versions");
+	
+	// alert("sel_hide_s16_5xx_mid_versions.value = " + sel_hide_s16_5xx_mid_versions.value);
+	if (sel_hide_s16_5xx_mid_versions.value == "yes")
+	{
+		HideS165xxMidVersions = 1;
+	}
+	else
+	{
+		HideS165xxMidVersions = 0;
+	}
+	WriteConfigFile();
+	window.location.reload(true);
+}
+function prompt_search_result(result_prompt_id, msg)
+{
+	result_prompt_id = result_prompt_id.toLowerCase();
+	// document.getElementById(result_prompt_id + "_lib_api_search").readOnly = true;
+	document.getElementById(result_prompt_id + "_lib_api_search_prompt").textContent = msg;
+	setTimeout(function() {
+		// Code to execute after the delay
+		
+		document.getElementById(result_prompt_id + "_lib_api_search").select();
+		// document.getElementById(result_prompt_id).textContent = "";
+		document.getElementById(result_prompt_id + "_lib_api_search_prompt").style.color = "gray";
+		// document.getElementById(result_prompt_id + "_lib_api_search").readOnly = false;
+		// console.log("Delayed code execution after 5 seconds");
+	}, 5000);
+}
+function check_toggle_feishu()
+{
+	FeishuUsingWeb ^= 1;
+	document.getElementById("feishu_using_web").checked = FeishuUsingWeb;
+}
+</script>
+
+<!-- <body bgcolor="grey"> -->
+<body onload="hta_onload()" onunload="hta_onunload()">
+<br>
+<!-- <b style="font-size:120%">Single Chip Microcomputer (SCM), Micro Controller Unit (MCU), System on Chip (SoC), Internet of Things (IoT)</b> -->
+<b style="font-size:120%" id="speaker">Cloud <u>S</u>peaker [S11]</b>
+<br>
+<br>
+<table>
+	<tr>
+		<td><b>[S11_4XX]</b></td>
+		<td><b>[S11_5XX]</b></td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S11_423.png" class="refimg" onmouseover="this.src='S11_423_OUT_PAK.png'" onmouseout="this.src='S11_423.png'" onclick=ExplorerShellExecute("S11-423_APP_15226.zip","",-1,"open",1) /><br>
+			<!-- &emsp;&emsp;[<a onclick=ExplorerFTP("S11_4XX")>S11_4XX</a>]<br> -->
+			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S11_4XX") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S11-423_APP_15226\\S11-423") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S11-423_APP_15226\\S11-423") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S11-423_APP_15226\\S11-423") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S11-423_APP_15226\\S11-423") />
+		</td>
+		<td>
+			<img src="S11_523.png" class="refimg" onmouseover="this.src='S11_523_OUT_PAK.png'" onmouseout="this.src='S11_523.png'" onclick=ExplorerShellExecute("S11-5XX.zip","",-1,"open",1) /><br>
+			<!-- &emsp;&emsp;[<a onclick=ExplorerFTP("S11_5XX")>S11_5XX</a>]<br> -->
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S11-5XX") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S11-5XX") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S11-5XX") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S11-5XX") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S11-5XX","S11-5XX\\DevelopmentEnvironment\\S11_523\\EC600U_S11\\ql-application\\Application") />
+		</td>
+	</tr>
+	<tr>
+		<td>
+		</td>
+		<td>
+			<input id="s11_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s11_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S11_5XX','S11-5XX',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<div id="s11_5xx_lib_api_search_progress" style="border:1px solid #000000;width:10px;" hidden></div>
+			<text id="s11_5xx_lib_api_search_prompt" style="font-family:consolas"></text>
+			
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<!-- <iframe src="HDIY/index.htm" width="1400" height="600" application="no"> -->
+<!-- <a href="page2.hta" target="_self">Go Page 2</a> -->
+<!-- <a href="LICENSE" target="_self">LIC</a> -->
+<!-- <a href="SM2246AB_MPR0823A_FWR0822A/sm22XMPToolR0823A.exe">46EN R0823A</a> -->
+<!-- </iframe> -->
+
+<!-- <br> -->
+<!-- <a onclick=ExplorerLocal("SM2246AB_MPR0823A_FWR0822A\\sm22XMPToolR0823A.exe")>46EN R0823A</a> -->
+
+
+<!-- <img src="usb.png" onmouseover="this.width='512'; this.height='512'" onmouseout="this.width='32'; this.height='32'"/> -->
+<br>
+<b style="font-size:120%">Cloud Speaker [S16]</b>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<b>[S16_4XX]</b>
+		</td>
+		<td>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16_5xx.7z","",-1,"open",1)><b>[S16_5XX]</b></a>
+		</td>
+		<td>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16_5XX_audio.zip","",-1,"open",1)><b>[S16_5XX_AUDIO]</b></a>
+		</td>
+		<td>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16_APP_SVN_15397.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_LCD_Fix_SVN_15397]</b></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S16_423_BACK.png" class="refimg" onmouseover="this.src='S16_423_FRONT.png'" onmouseout="this.src='S16_423_BACK.png'" onclick=ExplorerShellExecute("S16_4xx.zip","",-1,"open",1) /><br>
+			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_4XX") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16_4xx") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16_4xx") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16_4xx") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16_4xx") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16_4xx","S16_4xx\\DevelopmentEnvironment\\S16_423\\Air780e_S16\\Application") />
+		</td>
+		<td>
+			<img name="mid_versions" src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16_5xx.7z","",-1,"open",1) /><br>
+			<img name="mid_versions" src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16_5xx") />
+			<!-- <img name="mid_versions" src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16_5xx") /> -->
+			<img name="mid_versions" src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16_5xx") />
+			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16_5xx") />
+			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16_5xx","S16_5xx\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+		</td>
+		<td>
+			<img name="mid_versions" src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16_5XX_audio.zip","",-1,"open",1) /><br>
+			<img name="mid_versions" src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16_5xx_AUDIO") />
+			<!-- <img name="mid_versions" src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16_5xx_AUDIO") /> -->
+			<img name="mid_versions" src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16_5xx_AUDIO") />
+			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16_5xx_AUDIO") />
+			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16_5xx_AUDIO","S16_5xx_AUDIO\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+		</td>
+		<td>
+			<img name="mid_versions" src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16_APP_SVN_15397.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16_5XX_audio_15397") />
+			<img name="mid_versions" src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16_5XX_audio_15397") />
+			<img name="mid_versions" src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16_5XX_audio_15397") />
+			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16_5XX_audio_15397") />
+			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16_5XX_audio_15397","S16_5XX_audio_15397\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<input id="s16_4xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_4xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_4XX','S16_4xx',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<text id="s16_4xx_lib_api_search_prompt" style="font-family:consolas;"></text>
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<a onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240220]</b></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1) /><br>
+			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240220") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240220") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240220") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240220") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240220","S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
+			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_5XX','S16-5XX_MP3_240220',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<text id="s16_5xx_lib_api_search_prompt" style="font-family:consolas"></text>
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<b style="font-size:120%" id="terminal">QR POS <u>T</u>erminal [S17]</b>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<a onclick=ExplorerShellExecute("S17-123.zip","",-1,"open",1)><b>[S17_123]</b></a>
+		</td>
+		<td>
+			<a onclick=ExplorerShellExecute("S17-123-usb-ccid.7z","",-1,"open",1)><b>[S17_123_USB_CCID]</b></a>
+		</td>
+		<td>
+			<a onclick=ExplorerShellExecute("S17-123-virtual-serial.7z","",-1,"open",1)><b>[S17_123_VSP]</b></a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S17.png" class="refimg" onclick=ExplorerShellExecute("S17-123.zip","",-1,"open",1) /><br>
+			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S17_123") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S17-123-old\\04-SDK") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S17-123-old\\04-SDK") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S17-123-old\\04-SDK") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S17-123-old\\04-SDK") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S17-123-old\\04-SDK","S17-123-old\\04-SDK\\App&ensp;Source\\PosApp") />
+		</td>
+		<td>
+			<img src="S17.png" class="refimg" onclick=ExplorerShellExecute("S17-123-usb-ccid.7z","",-1,"open",1) /><br>
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S17-123-usb-ccid\\04-SDK") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S17-123-usb-ccid\\04-SDK") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S17-123-usb-ccid\\04-SDK") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S17-123-usb-ccid\\04-SDK") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S17-123-usb-ccid\\04-SDK","S17-123-usb-ccid\\04-SDK\\App&ensp;Source\\PosApp") />
+		</td>
+		<td>
+			<img src="S17.png" class="refimg" onclick=ExplorerShellExecute("S17-123-virtual-serial.7z","",-1,"open",1) /><br>
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S17-123-virtual-serial\\04-SDK") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S17-123-virtual-serial\\04-SDK") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S17-123-virtual-serial\\04-SDK") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S17-123-virtual-serial\\04-SDK") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S17-123-virtual-serial\\04-SDK","S17-123-virtual-serial\\04-SDK\\App&ensp;Source\\PosApp") />
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<input id="s17_123_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s17_123_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S17_123','S17-123-old\\04-SDK',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<text id="s17_123_lib_api_search_prompt" style="font-family:consolas;"></text>
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<b style="font-size:120%" id="pos6">All-in-one POS [P<u>6</u>3]</b>
+<br>
+<br>
+<table>
+	<tr>
+		<td><a name="mid_versions"><b>[P63_145]</b></a></td>
+		<td><b>[P63_185]</b></td>
+	</tr>
+	<tr>
+		<td>
+			<img name="mid_versions" src="P63.jpg" class="refimg" onclick=ExplorerShellExecute("P63#145-00560-DC-F20231222V1.0.0.15360.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("P63_145") />
+			<img name="mid_versions" src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("P63-145-StandardProcedure") />
+			<img name="mid_versions" src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("P63-145-StandardProcedure") />
+			<img name="mid_versions" src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("P63-145-StandardProcedure") />
+			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("P63-145-StandardProcedure") />
+		</td>
+		<td>
+			<img src="P63.jpg" class="refimg" /><br>
+			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("P63_185") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("P63StandardProcedure-185") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("P63StandardProcedure-185") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("P63StandardProcedure-185") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("P63StandardProcedure-185") />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<b style="font-size:120%">Tools</b>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<b>[_4XX] Log/Tracer and Download</b>
+		</td>
+		<td>
+			<b>[_5XX] Log/Tracer (UART)</b>&emsp;&emsp;<img src="Flag_of_Taiwan.png" class="refico16" onclick=ExecLocaleZhTW("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_debughost.exe","") />&emsp;<img src="Flag_of_China.png" class="refico16" onclick=ExecLocaleZhCN("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_debughost.exe","") />
+		</td>
+		<td>
+			<b>[_5XX] Log/Tracer (USB)</b>&emsp;&emsp;<img src="Flag_of_Taiwan.png" class="refico16" onclick=ExecLocaleZhTW("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_usb.exe","") />&emsp;<img src="Flag_of_China.png" class="refico16" onclick=ExecLocaleZhCN("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_usb.exe","") />
+		</td>
+		<td>
+			<b>[_5XX] Download</b>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S16_4XX_Log_Tracer_UI.png" class="refimg" onmouseover="this.src='S16_4XX_Download_UI.png'" onmouseout="this.src='S16_4XX_Log_Tracer_UI.png'" onclick=ExplorerShellExecute("Luatools_v2.exe","","Tools\\luatools","open",1) />
+		</td>
+		<td>
+			<img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=ExplorerShellExecute("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_debughost.exe","",-1,"open",1) />
+			<!-- <img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=ExecLocaleZhCN("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_debughost.exe","") /> -->
+		</td>
+		<td>
+			<img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=ExplorerShellExecute("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_usb.exe","",-1,"open",1) />
+		</td>
+		<td>
+			<img src="S16_5XX_DL_UI.png" class="refimg" onclick=ExplorerShellExecute("Tools\\UPGRADEDOWNLOAD_R23.0.0001\\Bin\\UpgradeDownload.exe","",-1,"open",1) />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<a onclick=ExplorerShellExecute("Tuts\\S16_5XX_DownloadAudioFiles\\S16-5XX_DownloadAudioFiles.docx","",-1,"open",1) ><b>S16_5XX Audio Download</b></a>
+			<b></b>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S16_5XX_DL_AUDIO_UI.png" class="refimg" onclick=ExplorerShellExecute("Tools\\S16MusicTool\\DownloadRes-svn6459\\DownloadRes.exe","",-1,"open",1) />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<b>S17 Sign Tool</b>
+		</td>
+		<td>
+			<b>S17 Download Tool</b>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<!-- <img src="S17_Sign_UI.jpg" class="refimg" onclick=ExplorerShellExecute("Tools\\S17\\Signature_Tool\\DCPDgstFW.exe","",-1,"open",1) /> -->
+			<img src="S17_Sign_UI.jpg" class="refimg" onclick=ExecLocaleZhCN("Tools\\S17\\Signature_Tool\\DCPDgstFW.exe","") />
+		</td>
+		<td>
+			<img src="S17_DL_UI.jpg" class="refimg" onclick=ExecLocaleZhCN("Tools\\S17\\DowdLoad_Tool\\DCPUpdateFW_SingleThread5929.exe","") />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<b style="font-size:120%">Tutorials</b>
+<br>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<b>S16_5XX Tracer Tool Setup Guide</b>
+		</td>
+		<td>
+			<b>S16 Configuration Download and Personalize Tool</b>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=ExplorerLocal("Tuts\\S16_5XX_Tracer_Tool_Setup_Guide") />
+		</td>
+		<td>
+			<img src="S16_iniconf_redl_personalization.jpg" class="refimg" onclick=ExplorerLocal("Tuts\\S16_Initial_configuration_redownload_tool_and_personalization_user_guide") />
+		</td>
+	</tr>
+</table>
+<br>
+
+<table>
+	<tr>
+		<td>
+			<b>BT-WiFi Connection Guide</b>
+		</td>
+		<td>
+			<b>S16_523 Bootup Logo Customization</b>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="BT_WiFi_Pairing_Guide.jpg" class="refimg" onclick=ExplorerLocal("Tuts\\BT_WiFi_Pairing_Guide") />
+		</td>
+		<td>
+			<img src="S16_Logo.jpg" class="refimg" onclick=ExplorerLocal("Tuts\\S16_523_bootup_logo") />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<b style="font-size:120%" id="docs"><u>D</u>ocumentations</b>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<b>[P63]</b>
+		</td>
+		<td>
+			<!-- <b>BT-WiFi Connection Guide</b> -->
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a onclick=ExplorerShellExecute("Docs\\P63\\P63（海外版机器，测试固件）服务端配置.txt","",-1,"open",1)><b>P63 Server Side Configuration</b></a><br>
+			<a onclick=ExplorerShellExecute("Docs\\P63\\动联POS下载固件操作说明.docx","",-1,"open",1)><b>P63 FW Download Guide</b></a><br>
+			<a onclick=ExplorerShellExecute("Docs\\P63\\《销售点终端（POS）应用规范_2020征求意见稿.doc","",-1,"open",1)><b>P63 Spec in terms of UnionPay</b></a>
+		</td>
+		<td>
+			<!-- <img src="BT_WiFi_Pairing_Guide.jpg" class="refimg" onclick=ExplorerLocal("Tuts\\BT_WiFi_Pairing_Guide") /> -->
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<b id="overseas" style="font-size:120%"><u>O</u>verseas Projects Collaborated</b>
+<br>
+<br>
+<b>[S16_Vietnam]</b> <img src="Flag_of_Vietnam.png" class="refico16" onclick=ExplorerAHK("Edge_Skype") /><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\20231121_1110.png","",-1,"open",1)><b>[Chat1]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231121_1208.png","",-1,"open",1)><b>[Chat2]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231127_1511.png","",-1,"open",1)><b>[Chat3]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231127_1520.png","",-1,"open",1)><b>[Chat4]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231130_0943.png","",-1,"open",1)><b>[Chat5]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231201_1558.png","",-1,"open",1)><b>[Chat6]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231202_1906.png","",-1,"open",1)><b>[Chat7]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231211_1431.png","",-1,"open",1)><b>[Chat8]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\DC_OpenDevice_CloseDevice.docx","",-1,"open",1)><b>[DC_OpenDevice/DC_CloseDevice]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\nm_core_stub.o.png","",-1,"open",1)><b>[nm core_stub.o]</b></a><br>
+<b>[S16_523_FLT_Vietnam]</b> <img src="Flag_of_Vietnam.png" class="refico16" onclick=ExplorerAHK("Edge_Skype") /><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\20231122_1340.png","",-1,"open",1)><b>[Chat1]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231122_1437.png","",-1,"open",1)><b>[Chat2]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231122_1617.png","",-1,"open",1)><b>[Chat3]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231123_1119.png","",-1,"open",1)><b>[Chat4]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231204_1009.png","",-1,"open",1)><b>[Chat5]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231204_1448.png","",-1,"open",1)><b>[Chat6]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231204_1702.png","",-1,"open",1)><b>[Chat7]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231208_1437.png","",-1,"open",1)><b>[Chat8]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231211_1042.png","",-1,"open",1)><b>[Chat9]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231211_1118.png","",-1,"open",1)><b>[Chat10]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231211_1229.png","",-1,"open",1)><b>[Chat11]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231212_0957.png","",-1,"open",1)><b>[Chat12]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231212_1041.png","",-1,"open",1)><b>[Chat13]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231212_1131.png","",-1,"open",1)><b>[Chat14]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231212_1408.png","",-1,"open",1)><b>[Chat15]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231212_1517.png","",-1,"open",1)><b>[Chat16]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231212_1712.png","",-1,"open",1)><b>[Chat17]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20231213_0952.png","",-1,"open",1)><b>[Chat18]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20140105_1558.png","",-1,"open",1)><b>[Chat19]</b></a><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\cJson_Parse_succeeded.png","",-1,"open",1)><b>[cJson_Parse succeeded]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\盾.txt","",-1,"open",1)><b>[VND]</b></a> <a onclick=ExplorerNotepad("Overseas_Projects\\cJsonParseTest.txt")><b>[cJsonParseTest.txt]</b></a> <a onclick=ExplorerNotepad("Overseas_Projects\\ql_fs_free_size.c")><b>[ql_fs_free_size]</b></a> <a onclick=ExplorerNotepad("Overseas_Projects\\SetNepalLocalTimeFromUTC8.c")><b>[SetNepalLocalTimeFromUTC8]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\vietnamese_voice_mp3.zip","",-1,"open",1)><b>[vietnamese_voice_mp3.zip]</b></a><br>
+<br>
+<b>[S17_Fonepay_Nepal]</b> <img src="Flag_of_Nepal.png" class="refico16" onclick=ExplorerAHK("Edge_WhatsApp") /><br>
+<br>
+<b>[S11_Pakistan]</b> <img src="Flag_of_Pakistan.png" class="refico16" onclick=ExplorerAHK("Edge_Skype") /><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\20140103_0943.png","",-1,"open",1)><b>[Chat1]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20140104_1520.png","",-1,"open",1)><b>[Chat2]</b></a><br>
+<br>
+<b>[S16_523_Masarat_Libya]</b> <img src="Flag_of_Libya.png" class="refico16" onclick=ExplorerAHK("Edge_WhatsApp") /><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\IOT_Integration.pdf","",-1,"open",1)><b>[IOT_Integration.pdf]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\S16_Q_A_07-01-2024.docx","",-1,"open",1)><b>[S16_Q_A_07-01-2024.docx]</b></a><br>
+&emsp;&emsp;<img src="Kbd.ico" class="refico32" onclick=ExplorerShellExecute("S16_523_Ext_Kbd.png","",-1,"open",1) />
+
+<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("Overseas_Projects\\S16_5XX_Masarat_LibyaX") />
+<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("Overseas_Projects\\S16_5XX_Masarat_LibyaX") />
+<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("Overseas_Projects\\S16_5XX_Masarat_LibyaX") />
+
+&emsp;&emsp;<textarea style="width:1400px;height:120px" readonly>
+http://160.19.103.122:881/api/QrPayment/GenerateQrData?deviceSerialNumber=55465230000153&amount=99.9
+
+http://160.19.103.122:881/api/QrPayment/GetPaymentTransactionStatus?transactionReferenceNumber=287ddb5e-4019-4626-b080-b70d904ddd29
+
+DTO = Data Transfer Object
+</textarea>
+<br>
+<br>
+<b>[S16_523_Pegasus_Kuwait]</b> <img src="Flag_of_Kuwait.png" class="refico16" onclick=ExplorerAHK("VMware_Wechat") /><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\Kuwait&#32;Pegasus&#32;Logo.png","",-1,"open",1)><b>[Kuwait Pegasus Logo]</b> <a onclick=ExplorerShellExecute("Overseas_Projects\\Pegasus_Updated_24bit.bmp","",-1,"open",1)><b>[Kuwait Pegasus Logo 320x240]</b></a>
+<br>
+<br>
+<b>[S11_523/S16_423_Esmagico_India]</b> <img src="Flag_of_India.png" class="refico16" onclick=ExplorerAHK("Edge_WhatsApp") /><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\20240119_1351.png","",-1,"open",1)><b>[Chat1]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20240119_1341.png","",-1,"open",1)><b>[DC_AlinkDeviceInfo/DC_SetAlinkDeviceInfo]</b></a> <a onclick=ExplorerNotepad("Overseas_Projects\\Esmagico_SetAlinkDevInfo.c")><b>[Esmagico_SetAlinkDevInfo.c]</b></a>
+<br>
+<br>
+<br>
+<b>[P63_PTH3_Iran]</b> <img src="Flag_of_Iran.png" class="refico16" onclick=ExplorerAHK("VMware_Wechat") /><br>
+<b>[P63_GI_India]</b> <img src="Flag_of_India.png" class="refico16" onclick=ExplorerAHK("Edge_Skype") /><br>
+<br>
+<table>
+	<tr>
+		<td><b>[P92/S16_423_FINTECH_India]</b> <img src="Flag_of_India.png" class="refico16" onclick=ExplorerAHK("Edge_Skype") /></td>
+		<!-- <td><b>[S16_523_Masarat_Libya]</b></td> -->
+	</tr>
+	<tr>
+		<td>
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("Overseas_Projects\\S16_4XX_FINTECH_Evolute") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("Overseas_Projects\\S16_4XX_FINTECH_Evolute") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("Overseas_Projects\\S16_4XX_FINTECH_Evolute") />
+		</td>
+		<!-- <td> -->
+			<!-- <img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("Overseas_Projects\\S16_5XX_Masarat_LibyaX") /> -->
+			<!-- <img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("Overseas_Projects\\S16_5XX_Masarat_LibyaX") /> -->
+			<!-- <img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("Overseas_Projects\\S16_5XX_Masarat_LibyaX") /> -->
+		<!-- </td> -->
+	</tr>
+</table>
+<br>
+<table>
+	<tr>
+		<td><b>[S11_523_LA_Hyuntech_Peru]</b> <img src="Flag_of_Peru.png" class="refico16" onclick=ExplorerAHK("Edge_WhatsApp") /></td>
+		<!-- <td><b>[S16_523_Masarat_Libya]</b></td> -->
+	</tr>
+	<tr>
+		<td>
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("Overseas_Projects\\S16_4XX_FINTECH_Evolute") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("Overseas_Projects\\S16_4XX_FINTECH_Evolute") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("Overseas_Projects\\S16_4XX_FINTECH_Evolute") />
+		</td>
+		<!-- <td> -->
+			<!-- <img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("Overseas_Projects\\S16_5XX_Masarat_LibyaX") /> -->
+			<!-- <img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("Overseas_Projects\\S16_5XX_Masarat_LibyaX") /> -->
+			<!-- <img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("Overseas_Projects\\S16_5XX_Masarat_LibyaX") /> -->
+		<!-- </td> -->
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<br>
+<b style="font-size:120%" id="notes"><u>N</u>otes</b><br>
+<br>
+<!-- <object data="./DC_WORKS.ini" width="300" height="200">Not Supported</object> -->
+<!-- <textarea style="width:400px;height:60px;font-size:16px;text-align:center" readonly > -->
+<textarea style="width:1500px;height:700px;font-size:16px" readonly >
+debug_uart:DC_AlinkDeviceInfo 494 mqtt_client client_id: 55465230000153|securemode=3,signmethod=hmacsha1,timestamp=1537861252000,ext=1|
+debug_uart:DC_AlinkDeviceInfo 495 mqtt_client usr: 55465230000153&a1FYB8MCndh
+debug_uart:DC_AlinkDeviceInfo 496 mqtt_client password: [71e715d4db03ac28b5d12ebd1f5e90de20c9c5ee]
+debug_uart:DC_AlinkDeviceInfo 497 mqtt_client addr: a1FYB8MCndh.iot-as-mqtt.cn-shanghai.aliyuncs.com
+debug_uart:DC_AlinkDeviceInfo 498 mqtt_client port: 1883
+
+
+debug_uart:DC_PrintfStr_d
+
+7z a -xr@exclude.txt S16_4xx.7z D:\DC_WORKS\S16_4xx
+
+
+
+[P63]
+ar x OSAPIEntrLib.lib
+
+[4XX]
+for i in `ls *.o`; do nm "$i" | grep 'T DC_InputNumber' && echo $i; done | sed -n '2p'
+[5XX]
+for i in `ls *.obj`; do nm "$i" | grep 'T DC_AlinkDeviceInfo' && echo $i; done | sed -n '2p'
+
+"A:\APPs\IDAPro\ida.exe" -A -S"lib_api_goto.idc DC_SetAlinkDeviceInfo" Api_MQTT.c.obj -o Api_MQTT.c.obj.idb
+
+msys2_shell.cmd -c "cd 'D:\DC_WORKS\S16-5XX_MP3_240220\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib'; if [ ! -e '*.obj' ]; then ar x libapiinterface.a; fi; for i in `ls *.obj`; do nm "$i" | grep 'T GGG' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; if [ -z "$ct" ]; then echo "empty"; else /A/APPs/IDAPro/ida.exe -A -S'lib_api_goto.idc GGG' $ct -o $ct.idb; fi; sleep 3"
+</textarea>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<form onchange=document.getElementById('textarea_reversed_api').value=ReadAllFromTextFile(document.getElementById('reversed_api').value)>
+	<label><b>Reversed API: </b></label>
+		<select id="reversed_api" style="font-family:consolas" value="">
+			<option value="">(None)</option>
+			<option value="Api_MQTT.c_DC_AlinkDeviceInfo">Api_MQTT.c_DC_AlinkDeviceInfo</option>
+			<option value="Api_MQTT.c_DC_SetAlinkDeviceInfo">Api_MQTT.c_DC_SetAlinkDeviceInfo</option>
+		</select>
+	<br><br>
+</form>
+<br>
+<textarea style="width:1400px;height:800px;font-size:16px" id="textarea_reversed_api" readonly>
+</textarea>
+<br>
+<br>
+<b style="font-size:120%" id="pref" ><u>P</u>references</b>
+<br>
+<br>
+<form onchange=update_config_select_prefs_hide_s16_5xx_mid_versions()>
+	<label>Hide intermediate versions:</label>&emsp;
+		<select id="sel_hide_s16_5xx_mid_versions" style="font-family:consolas">
+			<option id="sel_hide_s16_5xx_mid_versions_yes" value="yes">Yes</option>
+			<option id="sel_hide_s16_5xx_mid_versions_no" value="no">No</option>
+		</select>
+</form>
+<br>Use Feishu web version (instead of desktop):
+&emsp;
+<div style="display:inline;">
+	<!-- <label>ABC123</label> -->
+	<label class="switch">
+		<!-- <input id="lan_proxy_switch" type="checkbox" onclick="lan_proxy_switch_clicked()"> -->
+		<input id="feishu_using_web" checked type="checkbox" onclick=check_toggle_feishu()>
+		<span class="slider round"></span>
+	</label>
+</div>
+<br>
+<br>
+<br><br>
+<br>
+<br>
+<b style="font-size:120%" id="utils"><u>U</u>tilities</b><br>
+<br>
+
+<!-- <img src="APPs\\msys64\\msys2.ico" class="refico24" onclick=ExplorerShellExecute("msys2.exe","","APPs\\msys64","open",1) /> -->
+<!-- <img src="RegeditFind.ico" class="refico24" onclick=alert("1&#32;2") /> -->
+
+<table>
+	<tr>
+		<!-- <td><img src="CMD.ico" class="refico24" onclick=Run("CMD.exe&#32;/K") /></td> -->
+		<td><img src="CMD.ico" class="refico24" onclick=ExplorerCMDWithLaunchDIR(document.getElementById('sel_cmd_dirs').value) ></td>
+		<td>
+			&emsp;
+			<form onchange=ExplorerCMDWithLaunchDIR(document.getElementById('sel_cmd_dirs').value)>
+				<label><b>Workingfolder: </b></label>
+					<select id="sel_cmd_dirs" style="font-family:consolas" value="">
+						<option value="">(None)</option>
+						<option value="S11-423_APP_15226\\S11-423">S11-423</option>
+						<option value="S16_4xx\\DevelopmentEnvironment\\S16_423\\Air780e_S16">S16-4XX</option>
+						<option value="S16_5xx\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX</option>
+						<option value="S16_5xx_AUDIO\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5xx_AUDIO</option>
+						<option value="S16_5XX_audio_15397\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5XX_audio_15397</option>
+						<option value="S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240220</option>
+					</select>
+				<br><br>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<!-- <td><img src="APPs\\msys64\\msys2.ico" class="refico24" onclick=Exec("APPs\\msys64\\msys2.exe",-1) /></td> -->
+		<td><img src="APPs\\msys64\\msys2.ico" class="refico24" onclick=ExplorerMSYS2WithLaunchDIR(document.getElementById('sel_mysy2_dirs').value) /></td>
+		<td>
+			&emsp;
+			<form onchange=ExplorerMSYS2WithLaunchDIR(document.getElementById('sel_mysy2_dirs').value)>
+				<label><b>Workingfolder: </b></label>
+					<select id="sel_mysy2_dirs" style="font-family:consolas" value="">
+						<option value="">(None)</option>
+						<option value="S11-423_APP_15226\\S11-423">S11-423</option>
+						<option value="S16_4xx\\DevelopmentEnvironment\\S16_423\\Air780e_S16">S16-4XX</option>
+						<option value="S16_5xx\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX</option>
+						<option value="S16_5xx_AUDIO\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5xx_AUDIO</option>
+						<option value="S16_5XX_audio_15397\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5XX_audio_15397</option>
+						<option value="S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240220</option>
+					</select>
+				<br><br>
+			</form>
+		</td>
+	</tr>
+	<!-- <tr onclick=Exec("pythonw&#32D:\\Open\\COMTool\\COMTool\\Main.py",0)> -->
+		<!-- <td><img src="COMTool.ico" class="refico24"/></td> -->
+		<!-- <td><b>COMTool</b></td> -->
+	<!-- </tr> -->
+	<tr onclick=ExplorerRegistryWithLastKey("Computer\\HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet&#32;Settings") >
+		<td><img src="RegeditFind.ico" class="refico24"/></td>
+		<td><b>[Regedit - Internet Settings]</b></td>
+	</tr>
+	<tr onclick=ExplorerRegistryWithLastKey("Computer\\HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\Search&#32;Everything&#32;Here") >
+		<td><img src="RegeditFind.ico" class="refico24"/></td>
+		<td><b>[Regedit - Search Everything Here]</b></td>
+	</tr>
+	<tr onclick=ExplorerRegistryWithLastKey("Computer\\HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\LAN&#32;Proxy&#32;-&#32;Off") >
+		<td><img src="RegeditFind.ico" class="refico24"/></td>
+		<td><b>[Regedit - LAN Proxy Off]</b></td>
+	</tr>
+	<tr onclick=ExplorerRegistryWithLastKey("Computer\\HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session&#32;Manager\\Memory&#32;Management") >
+		<td><img src="RegeditFind.ico" class="refico24"/></td>
+		<td><b>[Virtual Memory - Paging File]</b></td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<b style="font-size:120%">Shortcuts</b>
+<br>
+<b>
+<br>
+[Ctrl + S]  Cloud <u>S</u>peakers<br>
+[Ctrl + T]  QR POS <u>T</u>erminal<br>
+[Ctrl + 6]  All-in-one POS P<u>6</u>3<br>
+[Ctrl + D]  <u>D</u>ocumentations<br>
+[Ctrl + N]  <u>N</u>otes<br>
+[Ctrl + O]  <u>O</u>verseas Projects<br>
+[Ctrl + P]  <u>P</u>references<br>
+[Ctrl + U]  <u>U</u>tilities<br>
+<br>
+[Ctrl + Alt + M] Show/Hide Device Manager<br>
+[Ctrl + Alt + N] Show/Hide Notepad++<br>
+<!-- [Ctrl + Alt + U] Show/Hide USB Device Tree Viewer<br> -->
+[Ctrl + Alt + V] Show/Hide VMware Player<br>
+<br>
+<br>
+<img src="Feishu.png" class="refico24" onclick=ExplorerAHK("Desktop_Feishu") /> [Alt+<u>F</u>eishu]
+&emsp;
+<img src="Feishu.png" class="refico24" onclick=ExplorerAHK("Desktop_Feishu_Mail") /> [Alt+Feishu<u>M</u>ail]
+&emsp;
+<img src="WhatsAPP.ico" class="refico16" onclick=ExplorerAHK("Edge_WhatsApp") /> [Alt+<u>W</u>hatsApp]&emsp;
+<img src="Skype.ico" class="refico16" onclick=ExplorerAHK("Edge_Skype") /> [Alt+<u>S</u>kype]&emsp;
+<img src="Wechat.png" class="refico16" onclick=ExplorerAHK("VMware_Wechat") /> [Alt+Wei<u>x</u>in]
+&emsp;
+<img src="DC_Push.ico" class="refico16" onclick=ExplorerAHK("Edge_DC_Push") /> [Alt+<u>P</u>ush]
+&emsp;
+<img src="DC_Devices.ico" class="refico16" onclick=ExplorerAHK("Edge_DC_Devices") /> [Alt+<u>D</u>evices]
+&emsp;
+<img src="ChatGPT.ico" class="refico16" onclick=ExplorerAHK("Edge_ChatGPT") /> [Alt+Chat<u>G</u>PT]
+</b>
+</body>
+</html>
