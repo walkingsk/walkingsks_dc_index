@@ -270,6 +270,9 @@
 	shortcut.add("CTRL+D", function() {
 		scroll_elem_into_view("docs");
 	});
+	shortcut.add("CTRL+L", function() {
+		scroll_elem_into_view("tools");
+	});
 	shortcut.add("CTRL+N", function() {
 		scroll_elem_into_view("notes");
 	});
@@ -1427,7 +1430,7 @@ function check_toggle_feishu()
 <br>
 <br>
 <br>
-<b style="font-size:120%">Tools</b>
+<b id="tools" style="font-size:120%">Too<u>l</u>s</b>
 <br>
 <br>
 <table>
@@ -1661,7 +1664,7 @@ DTO = Data Transfer Object
 <br>
 <!-- <object data="./DC_WORKS.ini" width="300" height="200">Not Supported</object> -->
 <!-- <textarea style="width:400px;height:60px;font-size:16px;text-align:center" readonly > -->
-<textarea style="width:1500px;height:700px;font-size:16px" readonly >
+<textarea style="width:1500px;height:2500px;font-size:16px" readonly >
 debug_uart:DC_AlinkDeviceInfo 494 mqtt_client client_id: 55465230000153|securemode=3,signmethod=hmacsha1,timestamp=1537861252000,ext=1|
 debug_uart:DC_AlinkDeviceInfo 495 mqtt_client usr: 55465230000153&a1FYB8MCndh
 debug_uart:DC_AlinkDeviceInfo 496 mqtt_client password: [71e715d4db03ac28b5d12ebd1f5e90de20c9c5ee]
@@ -1686,6 +1689,94 @@ for i in `ls *.obj`; do nm "$i" | grep 'T DC_AlinkDeviceInfo' && echo $i; done |
 "A:\APPs\IDAPro\ida.exe" -A -S"lib_api_goto.idc DC_SetAlinkDeviceInfo" Api_MQTT.c.obj -o Api_MQTT.c.obj.idb
 
 msys2_shell.cmd -c "cd 'D:\DC_WORKS\S16-5XX_MP3_240220\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib'; if [ ! -e '*.obj' ]; then ar x libapiinterface.a; fi; for i in `ls *.obj`; do nm "$i" | grep 'T GGG' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; if [ -z "$ct" ]; then echo "empty"; else /A/APPs/IDAPro/ida.exe -A -S'lib_api_goto.idc GGG' $ct -o $ct.idb; fi; sleep 3"
+
+
+Input encrypted code:
+cmVjZWl2ZWQgc3VjY2Vzc2Z1bGx5IHBheW1lbnQgb2Y=
+Original code:
+received successfully payment of
+Input encrypted code:
+W3sidHlwZSI6MSwidmFsdWUiOiJyZWNlaXZlZCBzdWNjZXNzZnVsbHkgcGF5bWVudCBvZiJ9LHsidHlwZSI6MiwidmFsdWUiOiIxMDAifV0=
+Original code:
+[{"type":1,"value":"received successfully payment of"},{"type":2,"value":"100"}]
+
+
+
+[2024-03-15 11:23:31.694][000000156.501] data->payloadLen: 358
+[2024-03-15 11:23:31.697][000000156.502] Mqtt_Queue_Broadcast1 on topic /sys/a1FYB8MCndh/55464230000067/thing/service: { "id": "1122334455", "version": "1.0", "method": "thing.service.play", "params": { "method": "thing.service.play", "orderId": "1122334455", "orderTime": 1682509649, "voiceText": "cmVjZWl2ZWQgc3VjY2Vzc2Z1bGx5IHBheW1lbnQgb2Y=", "voiceTextList": "W3sidHlwZSI6MSwidmFsdWUiOiJyZWNlaXZlZCBzdWNjZXNzZnVsbHkgcGF5bWVudCBvZiJ9LHsidHlwZSI6MiwidmFsdWUiOiIxMDAifV0=" } }
+
+[2024-03-15 11:23:31.701][000000156.503] thing.service.play found
+[2024-03-15 11:23:31.704][000000156.504] base64_text: W3sidHlwZSI6MSwidmFsdWUiOiJyZWNlaXZlZCBzdWNjZXNzZnVsbHkgcGF5bWVudCBvZiJ9LHsidHlwZSI6MiwidmFsdWUiOiIxMDAifV0=
+[2024-03-15 11:23:31.706][000000156.504] orignal_text: [{"type":1,"value":"received successfully payment of"},{"type":2,"value":"100"}]
+[2024-03-15 11:23:31.707][000000156.506] playstring received successfully payment of 100
+[2024-03-15 11:23:31.709][000000156.507] vol=[-1]
+
+
+
+
+
+/api/QrPayment/GetLastSuccessfulTransaction
+
+[
+    {
+        "amount": "10000",
+        "customerName": "mohammed",
+        "operationDate": "01-01"
+    },
+    {
+        "amount": "20000",
+        "customerName": "Abdulsslam",
+        "operationDate": "01-01"
+    },
+    {
+        "amount": "30000",
+        "customerName": "Sayed",
+        "operationDate": "01-01"
+    },
+    {
+        "amount": "40000",
+        "customerName": "Khaled",
+        "operationDate": "01-01"
+    },
+    {
+        "amount": "50000",
+        "customerName": "Sami",
+        "operationDate": "01-01"
+    }
+]
+
+debug_uart:DC_PrintfStr_d 19 json_item[0]: {
+	"amount":	"10000",
+	"customerName":	"mohammed",
+	"operationDate":	"01-01"
+}
+
+
+debug_uart:DC_PrintfStr_d 19 json_item[1]: {
+	"amount":	"20000",
+	"customerName":	"Abdulsslam",
+	"operationDate":	"01-01"
+}
+
+
+debug_uart:DC_PrintfStr_d 19 json_item[2]: {
+	"amount":	"30000",
+	"customerName":	"Sayed",
+	"operationDate":	"01-01"
+}
+
+debug_uart:DC_PrintfStr_d 19 json_item[3]: {
+	"amount":	"40000",
+	"customerName":	"Khaled",
+	"operationDate":	"01-01"
+}
+
+
+debug_uart:DC_PrintfStr_d 19 json_item[4]: {
+	"amount":	"50000",
+	"customerName":	"Sami",
+	"operationDate":	"01-01"
+}
 </textarea>
 
 <br>
@@ -1781,6 +1872,11 @@ msys2_shell.cmd -c "cd 'D:\DC_WORKS\S16-5XX_MP3_240220\DevelopmentEnvironment\S1
 			</form>
 		</td>
 	</tr>
+	<tr>
+		<div onclick=Exec("APPs\\Audacity\\audacity.exe",-1)>
+			<img style="width:32px" src="audacity.ico" /> <b>Audacity 2.0.6</b>
+		</div>
+	</tr>
 	<!-- <tr onclick=Exec("pythonw&#32D:\\Open\\COMTool\\COMTool\\Main.py",0)> -->
 		<!-- <td><img src="COMTool.ico" class="refico24"/></td> -->
 		<!-- <td><b>COMTool</b></td> -->
@@ -1804,7 +1900,6 @@ msys2_shell.cmd -c "cd 'D:\DC_WORKS\S16-5XX_MP3_240220\DevelopmentEnvironment\S1
 </table>
 <br>
 <br>
-<br>
 <b style="font-size:120%">Shortcuts</b>
 <br>
 <b>
@@ -1813,6 +1908,7 @@ msys2_shell.cmd -c "cd 'D:\DC_WORKS\S16-5XX_MP3_240220\DevelopmentEnvironment\S1
 [Ctrl + T]  QR POS <u>T</u>erminal<br>
 [Ctrl + 6]  All-in-one POS P<u>6</u>3<br>
 [Ctrl + D]  <u>D</u>ocumentations<br>
+[Ctrl + L]  Too<u>l</u>s<br>
 [Ctrl + N]  <u>N</u>otes<br>
 [Ctrl + O]  <u>O</u>verseas Projects<br>
 [Ctrl + P]  <u>P</u>references<br>
