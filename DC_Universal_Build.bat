@@ -123,13 +123,14 @@ CALL :String_Contains "%SolutionDIR%", "_LA_"
 SET EC600U_VER=EC600UEU_AB
 IF !ERRORLEVEL! == 0 (
 	ECHO [S11_523_LA]
-	REM SET EC600U_VER=EC600ULA_AC
-	SET EC600U_VER=EC600UCE_AC
+	SET EC600U_VER=EC600ULA_AC
+	REM SET EC600U_VER=EC600UCE_AC
 ) ELSE (
 	ECHO [S11_523 NOT LA]
 )
 
-CALL build_app.bat new %EC600U_VER% new_proj release
+CALL build_merge_pac.bat new %EC600U_VER% new_proj release
+REM CALL build_app.bat new %EC600U_VER% new_proj release
 pslist | grep -i UpgradeDownload > nul
 IF %ERRORLEVEL% EQU 1 (
 	START "" "%DC_WORKS_DIR%Tools\UPGRADEDOWNLOAD_R23.0.0001\Bin\UpgradeDownload.exe"
