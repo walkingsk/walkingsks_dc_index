@@ -719,7 +719,7 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 			
 			Call prompt_search_result(ProjectType, TargetResultObjFileName)
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib"
-			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S16_4XX" Then
@@ -737,7 +737,7 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 			' alert("found")
 			Call prompt_search_result(ProjectType, TargetResultObjFileName)
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib"
-			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S16_5XX" Then
@@ -753,7 +753,7 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 			Set TargetResultFileHandle = Nothing
 			Call prompt_search_result(ProjectType, TargetResultObjFileName)
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib"
-			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S17_123" Then
@@ -769,7 +769,7 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 			Set TargetResultFileHandle = Nothing
 			Call prompt_search_result(ProjectType, TargetResultObjFileName)
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\App Source\Lib"
-			ObjShell.Exec "A:\APPs\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
 	End If
@@ -1726,7 +1726,7 @@ DTO = Data Transfer Object
 </table>
 <br>
 <br>
-<textarea style="width:1500px;height:2800px;font-size:16px" readonly >
+<textarea style="width:1500px;height:3600px;font-size:16px" readonly >
 CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
 if exist F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application RD /S /Q F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application
 copy /y F:\_____\S16_5xx\AppSource\Application_2023.9.20\ql-application F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\
@@ -1781,7 +1781,7 @@ for i in `ls *.o`; do nm "$i" | grep 'T DC_InputNumber' && echo $i; done | sed -
 [5XX]
 for i in `ls *.obj`; do nm "$i" | grep 'T DC_AlinkDeviceInfo' && echo $i; done | sed -n '2p'
 
-"A:\APPs\IDAPro\ida.exe" -A -S"lib_api_goto.idc DC_SetAlinkDeviceInfo" Api_MQTT.c.obj -o Api_MQTT.c.obj.idb
+"A:\APPs\Reverse\IDAPro\ida.exe" -A -S"lib_api_goto.idc DC_SetAlinkDeviceInfo" Api_MQTT.c.obj -o Api_MQTT.c.obj.idb
 
 msys2_shell.cmd -c "cd 'D:\DC_WORKS\S16-5XX_MP3_240220\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib'; if [ ! -e '*.obj' ]; then ar x libapiinterface.a; fi; for i in `ls *.obj`; do nm "$i" | grep 'T GGG' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; if [ -z "$ct" ]; then echo "empty"; else /A/APPs/IDAPro/ida.exe -A -S'lib_api_goto.idc GGG' $ct -o $ct.idb; fi; sleep 3"
 
@@ -1823,7 +1823,85 @@ debug_uart:DC_PrintfStr_d 19 Mqtt_Queue_Broadcast1 on topic
 	"Suffix2Msg": "Thankyou"
 }
 
+/a1VoHa7VMZ8/55415230000057/user/service/voiceBroadcast
+{
+	"cmd": "Broadcast",
+	"suffix1": 1,
+	"suffix2": 1,
+	"payAmount": "995948.28",
+	"timestamp": "1710759997272",
+	"Suffix1Msg": "Received",
+	"Suffix2Msg": "Thankyou"
+}
 
+debug_uart:DC_PrintfStr_d 19 part: Received&c900.mp3|d90.mp3|y.mp3|num5.mp3|mil.mp3|c900.mp3|d40.mp3|y.mp3|n
+debug_uart:DC_PrintfStr_d 19 part: um8.mp3|soles.mp3|y.mp3|d20i.mp3|num8.mp3|cents.mp3|$Thank you
+
+debug_uart:DC_PrintfStr_d 19 part: Received&c900.mp3|d90.mp3|y.mp3|num5.mp3|mil.mp3|c900.mp3|d40.mp3|y.mp3|
+debug_uart:DC_PrintfStr_d 19 part: &num8.mp3|soles.mp3|y.mp3|d20i.mp3|num8.mp3|cents.mp3|$Thankyou
+
+
+void DC_PlayString(const char* str, unsigned char* segShow)
+{
+	const int seg_size = 80;
+
+	if (strlen(str) >= 128)
+	{
+		U8 part[128];
+		U8* p = strchr(str, '|');
+		U8* p_next;
+		U8* p_start = str;
+		int brk = 0;
+
+		for (; brk!= 1;)
+		{
+			p_next = strchr(p + 1, '|');
+			if (!p_next)
+			{
+				brk = 1;
+			}
+			if (brk != 1)
+			{
+				if (p_next >= p_start + seg_size)
+				{
+					if (str == p_start)
+					{
+						strncpy(part, p_start, p - p_start);
+						part[p - p_start] = '\0';
+					}
+					else
+					{
+						part[0] = '&';
+						strncpy(part + 1, p_start, p - p_start);
+						part[p - p_start + 1] = '\0';
+					}
+					// strncpy_s(part, 128, p_start, p - p_start + 1);
+					// strncpy(part, p_start, p - p_start + 1);
+					DC_AddEndTTSInfo(part, segShow);
+					APP_Printf("part: %s", part);
+					p_start = p;
+				}
+				else
+				{
+					p = p_next + 1;
+				}
+			}
+			else
+			{
+				// strcpy_s(part, 128, p_start);
+
+				// strcpy(part, p_start);
+				part[0] = '&';
+				strcpy(part + 1, p_start);
+				DC_AddEndTTSInfo(part, segShow);
+				APP_Printf("part: %s", part);
+			}
+		}
+
+	}
+	else
+		DC_AddEndTTSInfo(str, segShow);
+}
 </textarea>
 
 <br>
