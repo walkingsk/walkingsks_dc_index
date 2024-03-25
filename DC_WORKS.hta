@@ -606,11 +606,17 @@ Sub Exec(CMD,Local)
 	End If
 End Sub
 Sub ExecLocaleZhTW(Path, Params)
-	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas 1bdfb941-7ab1-426e-b4d1-38321fc6ce1e """ &  ScriptDIR & "\" & Path & """ " & Params
+	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas 1bdfb941-7ab1-426e-b4d1-38321fc6ce1e """ & ScriptDIR & "\" & Path & """ " & Params
+End Sub
+Sub ExecLocaleZhTWAbsolutePath(Path, Params)
+	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas 1bdfb941-7ab1-426e-b4d1-38321fc6ce1e """ & Path & """ " & Params
 End Sub
 Sub ExecLocaleZhCN(Path, Params)
 	' ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas c9579ff9-4b15-445f-a6fd-bc4b12d238c3 " & Chr(&H22) &  ScriptDIR & "\" & Path & """ " & Params
 	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas c9579ff9-4b15-445f-a6fd-bc4b12d238c3 """ &  ScriptDIR & "\" & Path & """ " & Params
+End Sub
+Sub ExecLocaleZhCNAbsolutePath(Path, Params)
+	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas c9579ff9-4b15-445f-a6fd-bc4b12d238c3 """ & Path & """ " & Params
 End Sub
 Sub Run(CMD)
 	' ObjShell.Exec CMD
@@ -1826,7 +1832,6 @@ debug_uart:DC_PrintfStr_d 19 Mqtt_Queue_Broadcast1 on topic
 <br>
 <br>
 <br>
-<br>
 <form onchange=document.getElementById('textarea_reversed_api').value=ReadAllFromTextFile(document.getElementById('reversed_api').value)>
 	<label><b>Reversed API: </b></label>
 		<select id="reversed_api" style="font-family:consolas" value="">
@@ -1874,6 +1879,11 @@ debug_uart:DC_PrintfStr_d 19 Mqtt_Queue_Broadcast1 on topic
 
 <table>
 	<tr>
+		<div>
+			<img style="width:32px" src="audacity.ico" onclick=Exec("APPs\\Audacity\\audacity.exe",-1) /> <b>Audacity 2.0.6</b>
+		</div>
+	</tr>
+	<tr>
 		<!-- <td><img src="CMD.ico" class="refico24" onclick=Run("CMD.exe&#32;/K") /></td> -->
 		<td><img src="CMD.ico" class="refico24" onclick=ExplorerCMDWithLaunchDIR(document.getElementById('sel_cmd_dirs').value) ></td>
 		<td>
@@ -1913,15 +1923,22 @@ debug_uart:DC_PrintfStr_d 19 Mqtt_Queue_Broadcast1 on topic
 			</form>
 		</td>
 	</tr>
-	<tr>
-		<div onclick=Exec("APPs\\Audacity\\audacity.exe",-1)>
-			<img style="width:32px" src="audacity.ico" /> <b>Audacity 2.0.6</b>
-		</div>
-	</tr>
 	<!-- <tr onclick=Exec("pythonw&#32D:\\Open\\COMTool\\COMTool\\Main.py",0)> -->
 		<!-- <td><img src="COMTool.ico" class="refico24"/></td> -->
 		<!-- <td><b>COMTool</b></td> -->
 	<!-- </tr> -->
+	<tr>
+		<td><img src="Flag_of_Taiwan.png"/></td>
+		<td><b>Execute with Locale</b></td>
+		<td><input id="exec_locale_zh_tw_path" onkeydown="if (event.keyCode == 13) ExecLocaleZhTWAbsolutePath(this.value,document.getElementById('exec_locale_zh_tw_params').value);"></input></td>
+		<td><input id="exec_locale_zh_tw_params" style="width:400px"></input></td>
+	</tr>
+	<tr>
+		<td><img src="Flag_of_China.png"/></td>
+		<td><b>Execute with Locale</b></td>
+		<td><input id="exec_locale_zh_cn_path" onkeydown="if (event.keyCode == 13) ExecLocaleZhCNAbsolutePath(this.value,document.getElementById('exec_locale_zh_cn_params').value);"></input></td>
+		<td><input id="exec_locale_zh_cn_params" style="width:400px"></input></td>
+	</tr>
 	<tr onclick=ExplorerRegistryWithLastKey("Computer\\HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet&#32;Settings") >
 		<td><img src="RegeditFind.ico" class="refico24"/></td>
 		<td><b>[Regedit - Internet Settings]</b></td>
