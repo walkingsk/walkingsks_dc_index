@@ -1244,7 +1244,7 @@ function check_toggle_feishu()
 			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S11-5XX\\DevelopmentEnvironment\\S11_523\\EC600U_S11\\ql-application\\Application") />
 		</td>
 		<td>
-			<img src="S11_523.png" class="refimg" onmouseover="this.src='S11_523_OUT_PAK.png'" onmouseout="this.src='S11_523.png'"/><br>
+			<img src="S11_523.png" class="refimg" onmouseover="this.src='S11_523_OUT_PAK.png'" onmouseout="this.src='S11_523.png'" onclick=ExplorerShellExecute("S11-523-0055-IDE_15585.rar","",-1,"open",1) /><br>
 			<!-- &emsp;&emsp;[<a onclick=ExplorerFTP("S11_5XX")>S11_5XX</a>]<br> -->
 			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S11_523_15585") />
 			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S11_523_15585") />
@@ -1706,7 +1706,21 @@ DTO = Data Transfer Object
 <br>
 <!-- <object data="./DC_WORKS.ini" width="300" height="200">Not Supported</object> -->
 <!-- <textarea style="width:400px;height:60px;font-size:16px;text-align:center" readonly > -->
-<textarea style="width:1500px;height:4400px;font-size:16px" readonly >
+<table>
+	<tr>
+		<td>
+			<b>5XX Reproduction Procedure</b>
+		</td>
+		<td>
+			<img src="5XX_Reproduction_Proc.png" />
+		</td>
+	</tr>
+	<tr>
+	</tr>
+</table>
+<br>
+<br>
+<textarea style="width:1500px;height:2800px;font-size:16px" readonly >
 CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
 if exist F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application RD /S /Q F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application
 copy /y F:\_____\S16_5xx\AppSource\Application_2023.9.20\ql-application F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\
@@ -1716,6 +1730,9 @@ build_app.bat new EC600UEU_AB new_proj release
 
 build_app.bat new EC600UEU_AB
 
+
+CD /D D:\DC_WORKS\S11_523_15585\DevelopmentEnvironment\S11_523\EC600U_S11
+build_merge_pac.bat new EC600UCE_AC new_proj release
 
 
 CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
