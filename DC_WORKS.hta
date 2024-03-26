@@ -1120,6 +1120,15 @@ Sub WriteConfigFile()
 	
 	ConfigFile.Close
 End Sub
+
+
+Sub Clean8910TracerLogs()
+	Randomize
+	' 0 1 2
+	If Int(Rnd * 3) > 0 Then
+		ObjShell.Run "CMD.exe /C CD /D " & ScriptDIR & "\Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\logs & IF EXIST *.TRC DEL *.TRC", 0, False
+	End If
+End Sub
 </script>
 
 <script>
@@ -1173,6 +1182,7 @@ function hta_onunload()
 		//ExitTray32();
 	}
 	
+	Clean8910TracerLogs();
 	ReleaseObjs();
 }
 function scroll_elem_into_view(id)
@@ -1226,9 +1236,9 @@ function check_toggle_feishu()
 <br>
 <table>
 	<tr>
-		<td><b>[S11_4XX] EigenComm EC618</b></td>
+		<td><b>[S11_4XX] EigenComm EC618<br>ARM Cortex-M3 32-bit RISC processor</b></td>
 		<td><a name="mid_versions"><b>[S11_5XX]</b></a></td>
-		<td><b>[S11_5XX_15585] Unisoc 8910DM</b></td>
+		<td><b>[S11_5XX_15585] Unisoc 8910DM<br>ARM Cortex-A5 32-bit processor</b></td>
 	</tr>
 	<tr>
 		<td>
@@ -1295,7 +1305,7 @@ function check_toggle_feishu()
 <table>
 	<tr>
 		<td>
-			<b>[S16_4XX]</b>
+			<b>[S16_4XX]<br>EC618 32-bit RISC ARM</b>
 		</td>
 		<td>
 			<a name="mid_versions" onclick=ExplorerShellExecute("S16_5xx.7z","",-1,"open",1)><b>[S16_5XX]</b></a>
@@ -1712,20 +1722,6 @@ DTO = Data Transfer Object
 <br>
 <!-- <object data="./DC_WORKS.ini" width="300" height="200">Not Supported</object> -->
 <!-- <textarea style="width:400px;height:60px;font-size:16px;text-align:center" readonly > -->
-<table>
-	<tr>
-		<td>
-			<b>5XX Reproduction Procedure</b>
-		</td>
-		<td>
-			<img src="5XX_Reproduction_Proc.png" />
-		</td>
-	</tr>
-	<tr>
-	</tr>
-</table>
-<br>
-<br>
 <textarea style="width:1500px;height:3600px;font-size:16px" readonly >
 CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
 if exist F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application RD /S /Q F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application
@@ -1902,8 +1898,26 @@ void DC_PlayString(const char* str, unsigned char* segShow)
 	else
 		DC_AddEndTTSInfo(str, segShow);
 }
-</textarea>
 
+D:\DC_WORKS\RunTime\strawberry-perl-5.38.2.2-64bit-PDL\portableshell.bat /SETENV
+rundll32.exe cryptext.dll,CryptExtOpenCER D:\DC_WORKS\Overseas_Projects\S11_523_LA_Hyuntech\AWS\cli.crt
+rundll32.exe cryptext.dll,CryptExtOpenCER D:\DC_WORKS\Overseas_Projects\S11_523_LA_Hyuntech\AWS\ca.pem
+</textarea>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<b>5XX Reproduction Procedure</b>
+		</td>
+		<td>
+			<img src="5XX_Reproduction_Proc.png" />
+		</td>
+	</tr>
+	<tr>
+	</tr>
+</table>
+<br>
 <br>
 <br>
 <br>
