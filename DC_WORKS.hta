@@ -1388,21 +1388,35 @@ function check_toggle_feishu()
 <table>
 	<tr>
 		<td>
-			<a onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240220]</b></a>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240220]</b></a>
+		</td>
+		<td>
+			<a onclick=ExplorerShellExecute("S16-5XX_V2.0_240326.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240326]</b></a>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
+			<img name="mid_versions" src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240220") />
+			<img name="mid_versions" src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240220") />
+			<img name="mid_versions" src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240220") />
+			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240220") />
+			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+		</td>
+		<td>
+			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V2.0_240326.rar","",-1,"open",1) /><br>
 			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
-			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240220") />
-			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240220") />
-			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240220") />
-			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240220") />
-			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240326") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240326") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240326") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240326") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
 		</td>
 	</tr>
 	<tr>
+		<td>
+		</td>
 		<td>
 			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
 			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_5XX','S16-5XX_MP3_240220',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
@@ -1746,7 +1760,7 @@ DTO = Data Transfer Object
 <br>
 <!-- <object data="./DC_WORKS.ini" width="300" height="200">Not Supported</object> -->
 <!-- <textarea style="width:400px;height:60px;font-size:16px;text-align:center" readonly > -->
-<textarea style="width:1500px;height:4600px;font-size:16px" readonly >
+<textarea style="width:1500px;height:5200px;font-size:16px" readonly >
 CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
 if exist F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application RD /S /Q F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application
 copy /y F:\_____\S16_5xx\AppSource\Application_2023.9.20\ql-application F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\
@@ -1986,6 +2000,36 @@ Certificate:
         f6:c4:93:43:77:66:61:c0:b9:e8:41:d7:97:78:60:03:6e:4a:
         72:ae:a5:d1:7d:ba:10:9e:86:6c:1b:8a:b9:59:33:f8:eb:c4:
         90:be:f1:b9
+
+
+405220 [CMD]
+
+405040 [SHA1]
+
+405080 [PersonalizeCommandHexTextBuffer]
+
+
+a1FIC2ShU3P
+55415230000049
+
+02 00 00 80 B3 00 6A 28 01 02 29 65 12 0E 35 35 
+34 31 35 32 33 30 30 30 30 30 34 39 35 0E 35 35 
+34 31 35 32 33 30 30 30 30 30 34 39 36 0B 61 31 
+46 49 43 32 53 68 55 33 50 37 20 39 61 38 62 66 
+32 65 64 64 62 62 31 39 32 62 66 37 38 37 36 37 
+65 34 66 63 32 63 33 39 30 66 32 25 14 BC EF 14 
+50 C4 EF 49 66 55 39 FA CF 8E 3E A9 D0 16 A4 E7 
+B9 03 10 
+
+02 00 00 80 B3 00 6A 28 01 02 29 65 12 0E 35 35 
+34 31 35 32 33 30 30 30 30 30 34 39 35 0E 35 35 
+34 31 35 32 33 30 30 30 30 30 34 39 36 0B 61 31 
+46 49 43 32 53 68 55 33 50 37 20 39 61 38 62 66 
+32 65 64 64 62 62 31 39 32 62 66 37 38 37 36 37 
+65 34 66 63 32 63 33 39 30 66 32 25 14 BC EF 14 
+50 C4 EF 49 66 55 39 FA CF 8E 3E A9 D0 16 A4 E7 
+B9 03 10 
+
 </textarea>
 <br>
 <br>
@@ -2003,8 +2047,18 @@ Certificate:
 </table>
 <br>
 <br>
-<br>
-<br>
+<table>
+	<tr>
+		<td>
+			<b>Geph Listening on All Ports</b>
+		</td>
+		<td>
+			<img src="Geph.png" />
+		</td>
+	</tr>
+	<tr>
+	</tr>
+</table>
 <br>
 <br>
 <br>
@@ -2074,6 +2128,7 @@ Certificate:
 						<option value="S16_5xx_AUDIO\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5xx_AUDIO</option>
 						<option value="S16_5XX_audio_15397\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5XX_audio_15397</option>
 						<option value="S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240220</option>
+						<option value="S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240326</option>
 					</select>
 				<br><br>
 			</form>
