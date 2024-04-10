@@ -264,6 +264,9 @@
 	shortcut.add("ALT+G", function() {
 		ExplorerAHK("Edge_ChatGPT")
 	});
+	shortcut.add("CTRL+A", function() {
+		scroll_elem_into_view("tutorials");
+	});
 	shortcut.add("CTRL+P", function() {
 		scroll_elem_into_view("pref");
 	});
@@ -554,6 +557,7 @@ On Error Resume Next
 Set ObjShell = CreateObject("WScript.Shell")
 Set ObjApplication = CreateObject("Shell.Application")
 Set ObjFS = CreateObject("Scripting.FileSystemObject")
+' Set DataObject = CreateObject("new:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
 
 Const HKCR = &H80000000
 Const HKCU = &H80000001
@@ -590,6 +594,7 @@ Sub ReleaseObjs()
 	Set ObjShell = Nothing
 	Set ObjApplication = Nothing
 	Set ObjFS = Nothing
+	' Set DataObject = Nothing
 End Sub
 
 ' MsgBox SysWOW64DIR
@@ -940,6 +945,27 @@ Sub Minimize() 'Minimize this HTA window
 		ObjShell.Exec ScriptDIR & "\Win10LegacySettingsLauncher32.exe --minimize"
 	End If
 End Sub
+
+
+'Sub CopyStringToClipboard(StringText) ' No!! "MSForms.DataObject" is NOT available in HTML Applications according to ChatGPT
+	'DataObject.SetText StringText
+	'DataObject.PutInClipboard
+'End Sub
+
+'Sub CopyStringToClipboard(String) ' This method will add an extra '\n' to String in clipboard
+	'' ObjShell.Run "CMD /C ECHO " & String & " | clip & Pause ", 1, True
+	'ObjShell.Run "CMD /C ECHO " & String & "| clip", 0
+'End Sub
+
+Sub Run5XXTracerUart()
+	ExplorerShellExecute "Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\coolwatcher_debughost.exe", "", -1, "open", 1
+	CopyStringToClipboard "debug_uart:DC_PrintfStr_d"
+End Sub
+Sub Run5XXTracerUSB()
+	ExplorerShellExecute "Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\coolwatcher_usb.exe", "", -1, "open", 1
+	CopyStringToClipboard "debug_uart:DC_PrintfStr_d"
+End Sub
+
 Sub Calc()
 	ObjShell.Exec "calc.exe"
 End Sub
@@ -1193,6 +1219,7 @@ function hta_onload()
 	document.getElementById("title").text = Math.floor(Math.random() * 3) == 0 ? "梁罡的 DC 索引" : "罡哥的 DC 索引";
 	
 	FeishuUsingWeb = document.getElementById("feishu_using_web").checked;
+	//disable_scroll();
 }
 function hta_onunload()
 {
@@ -1249,6 +1276,36 @@ function check_toggle_feishu()
 	FeishuUsingWeb ^= 1;
 	document.getElementById("feishu_using_web").checked = FeishuUsingWeb;
 }
+
+function CopyStringToClipboard(text) {
+	// Create a textarea element
+	var textarea = document.createElement("textarea");
+
+	// Set the value of the textarea to the specified text
+	textarea.value = text;
+
+	// Append the textarea to the document body
+	document.body.appendChild(textarea);
+
+	// Select the text in the textarea
+	textarea.select();
+
+	// Copy the selected text to the clipboard
+	document.execCommand("copy");
+
+	// Remove the textarea from the document body
+	document.body.removeChild(textarea);
+}
+// Function to disable scrolling
+function disable_scroll() {
+	document.body.style.overflow = 'hidden';
+}
+
+// Function to enable scrolling
+function enable_scroll() {
+	document.body.style.overflow = 'auto';
+}
+
 </script>
 
 <!-- <body bgcolor="grey"> -->
@@ -1391,7 +1448,7 @@ function check_toggle_feishu()
 			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240220]</b></a>
 		</td>
 		<td>
-			<a onclick=ExplorerShellExecute("S16-5XX_V2.0_240326.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240326]</b></a>
+			<a onclick=ExplorerShellExecute("S16-5XX_V2.0_240326.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240326]<br>16M RAM & 8M Flash</b></a>
 		</td>
 	</tr>
 	<tr>
@@ -1522,7 +1579,7 @@ function check_toggle_feishu()
 			<b>[_5XX] Log/Tracer (USB)</b>&emsp;&emsp;<img src="Flag_of_Taiwan.png" class="refico16" onclick=ExecLocaleZhTW("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_usb.exe","") />&emsp;<img src="Flag_of_China.png" class="refico16" onclick=ExecLocaleZhCN("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_usb.exe","") />
 		</td>
 		<td>
-			<b>[_5XX] Download</b>
+			<b onclick=CopyStringToClipboard("debug_uart:DC_PrintfStr_d") >[_5XX] Download</b>
 		</td>
 	</tr>
 	<tr>
@@ -1530,11 +1587,11 @@ function check_toggle_feishu()
 			<img src="S16_4XX_Log_Tracer_UI.png" class="refimg" onmouseover="this.src='S16_4XX_Download_UI.png'" onmouseout="this.src='S16_4XX_Log_Tracer_UI.png'" onclick=ExplorerShellExecute("Luatools_v2.exe","","Tools\\luatools","open",1) />
 		</td>
 		<td>
-			<img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=ExplorerShellExecute("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_debughost.exe","",-1,"open",1) />
+			<img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=Run5XXTracerUart() />
 			<!-- <img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=ExecLocaleZhCN("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_debughost.exe","") /> -->
 		</td>
 		<td>
-			<img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=ExplorerShellExecute("Tools\\8910_cooltools-win32_custom_P3.R2.0.0005-1\\coolwatcher_usb.exe","",-1,"open",1) />
+			<img src="S16_5XX_Log_Tracer_UI.png" class="refimg" onclick=Run5XXTracerUSB() />
 		</td>
 		<td>
 			<img src="S16_5XX_DL_UI.png" class="refimg" onclick=ExplorerShellExecute("Tools\\UPGRADEDOWNLOAD_R23.0.0001\\Bin\\UpgradeDownload.exe","",-1,"open",1) />
@@ -1607,7 +1664,7 @@ function check_toggle_feishu()
 <br>
 <br>
 <br>
-<b style="font-size:120%">Tutorials</b>
+<b id="tutorials" style="font-size:120%">Tutori<u>a</u>ls</b>
 <br>
 <br>
 <br>
@@ -1670,6 +1727,20 @@ function check_toggle_feishu()
 	</tr>
 </table>
 <br>
+<table>
+	<tr>
+		<td>
+			<a><b>MQTT Essentials from Eclipse Mosquitto<b></a><br>
+			<a><b>https://mosquitto.org/man/mqtt-7.html<b></a>
+			<!-- <textarea style="width:280px;height:18px;font-size:12px" readonly>https://mosquitto.org/man/mqtt-7.html</textarea> -->
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img style="width:100%" src="MQTT_Essentials_from_Eclipse_Mosquitto.png" />
+		</td>
+	</tr>
+</table>
 <br>
 <br>
 <b id="overseas" style="font-size:120%"><u>O</u>verseas Projects Collaborated</b>
@@ -1701,6 +1772,10 @@ http://160.19.103.122:881/api/QrPayment/GetPaymentTransactionStatus?transactionR
 
 DTO = Data Transfer Object
 </textarea>
+<br>
+<img src="Overseas_Projects\\S16_5XX_Masarat_LibyaX\\Microsoft-IIS10.0_HTTP_Resp.png" />
+<br>
+<img src="Overseas_Projects\\S16_5XX_Masarat_LibyaX\\KbdEchoTest_Read_Mismatch.png" />
 <br>
 <br>
 <b>[S16_523_Pegasus_Kuwait]</b> <img src="Flag_of_Kuwait.png" class="refico16" onclick=ExplorerAHK("VMware_Wechat") /><br>
@@ -2034,6 +2109,27 @@ B9 03 10
 debug_uart:DC_PrintfStr_d 19 Input ID: 99900
 debug_uart:DC_PrintfStr_d 19 Input PIN: 654321
 
+{
+    "status": "success",
+    "message": "Login successful",
+    "merchantId": "123456",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5M2Y4MDllOC1jYjYwLTRiODEtOWY5NC1hZWUxZmYyNjBhYTUiLCJBcHBJZCI6IjY1IiwiTWVyY2hhbnRJZCI6IjExOTAyMCIsIlVUSUQiOiJQT1MiLCJQT1NJZCI6IjI4MTIxOTYiLCJQSUQiOiIzMDAiLCJBdXRoU3RhdGVQYXltZW50IjoiNCIsImV4cCI6MTcxMzc2MTA4MiwiaXNzIjoibWl0dC1kZXYiLCJhdWQiOiJtaXR0LWRldiJ9.GYil5VVyJ6NWGZaC0npnXmJ-uevIncXKBbxbmA874Ko"
+}
+
+
+LMP 11.x – Bluetooth 5.2
+LMP 10.x – Bluetooth 5.1
+LMP  9.x – Bluetooth 5.0
+LMP  8.x – Bluetooth 4.2
+LMP  7.x – Bluetooth 4.1
+LMP  6.x – Bluetooth 4.0
+LMP  5.x – Bluetooth 3.0 + HS
+LMP  4.x – Bluetooth 2.1 + EDR
+LMP  3.x – Bluetooth 2.0 + EDR
+LMP  2.x – Bluetooth 1.2
+LMP  1.x – Bluetooth 1.1
+LMP  0.x – Bluetooth 1.0b
+
 
 
 </textarea>
@@ -2062,7 +2158,39 @@ debug_uart:DC_PrintfStr_d 19 Input PIN: 654321
 			<img src="Geph.png" />
 		</td>
 	</tr>
+</table>
+<br>
+<br>
+<table>
 	<tr>
+		<td>
+			<b>MQTT Wildcard Topics</b>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="MQTT_WILDCARD_TOPICS.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<b>MQTT Wildcard Topics Subscribe + Publish LA</b>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="MQTT_WILDCARD_TOPICS_Subscribe_CB_LA.png" />
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="MQTT_WILDCARD_TOPICS_Publish_LA.png" />
+		</td>
 	</tr>
 </table>
 <br>
@@ -2199,6 +2327,7 @@ debug_uart:DC_PrintfStr_d 19 Input PIN: 654321
 <br>
 <b>
 <br>
+[Ctrl + A]  Tutori<u>a</u>ls<br>
 [Ctrl + S]  Cloud <u>S</u>peakers<br>
 [Ctrl + T]  QR POS <u>T</u>erminal<br>
 [Ctrl + 6]  All-in-one POS P<u>6</u>3<br>
