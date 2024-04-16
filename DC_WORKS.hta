@@ -1178,6 +1178,11 @@ Sub Clean8910TracerLogs()
 		ObjShell.Run "CMD.exe /C CD /D " & ScriptDIR & "\Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\logs & IF EXIST *.TRC DEL *.TRC", 0, False
 	End If
 End Sub
+
+Function GetSSURLToClipboard()
+	ObjShell.Run "CMD.exe /C CD /D " & ScriptDIR & " & curl -s -L https://github.com/Alvin9999/new-pac/wiki/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7 -x127.0.0.1:9910 -oSS_GitHub_URL_HTML.txt & cat SS_GitHub_URL_HTML.txt | grep ss:// | clip", 0, True
+	
+End Function
 </script>
 
 <script>
@@ -1304,6 +1309,25 @@ function disable_scroll() {
 // Function to enable scrolling
 function enable_scroll() {
 	document.body.style.overflow = 'auto';
+}
+function get_ss_url() {
+	// document.body.style.overflow = 'auto';
+	GetSSURLToClipboard();
+	/*
+	File STDIN:
+	<div class="highlight highlight-source-shell notranslate position-relative overflow-auto" data-snippet-clipboard-copy-content="ssr://ZG9uZ3RhaXdhbmc1LmNvbToyMjIyMjphdXRoX2NoYWluX2E6bm9uZTpwbGFpbjpaRzl1WjNSaGFYZGhibWN1WTI5dC8_b2Jmc3BhcmFtPSZyZW1hcmtzPWQzZDNMbVJ2Ym1kMFlXbDNZVzVuTG1OdmJTRG52bzdsbTcw"><pre>ssr://ZG9uZ3RhaXdhbmc1LmNvbToyMjIyMjphdXRoX2NoYWluX2E6bm9uZTpwbGFpbjpaRzl1WjNSaGFYZGhibWN1WTI5dC8_b2Jmc3BhcmFtPSZyZW1hcmtzPWQzZDNMbVJ2Ym1kMFlXbDNZVzVuTG1OdmJTRG52bzdsbTcw</pre></div>
+	
+	*/
+	//window.clipboardData.clearData();
+	//window.clipboardData.setData("Text", "123");
+	var stdout = window.clipboardData.getData("Text");
+	var i_start = stdout.indexOf("<pre>") + 5;
+	var i_end = stdout.indexOf("</pre>");
+	var ss_url = stdout.substring(i_start, i_end);
+	
+	document.getElementById("ss_url").value = ss_url;
+	
+	window.clipboardData.setData("Text", ss_url);
 }
 
 </script>
@@ -2132,6 +2156,20 @@ LMP  0.x – Bluetooth 1.0b
 
 ip.addr == 160.19.103.122
 
+ffmpeg -i input.mp4 -vf "transpose=1" output.mp4
+0: Rotate by 90 degrees counterclockwise and flip vertically.
+1: Rotate by 90 degrees clockwise.
+2: Rotate by 90 degrees counterclockwise.
+3: Rotate by 90 degrees clockwise and flip vertically.
+
+
+ffmpeg -i input.mp4 -ss 00:00:10 -to 00:00:30 -c:v copy -c:a copy output.mp4
+
+
+curl -L https://github.com/Alvin9999/new-pac/wiki/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7 -x127.0.0.1:9910 -oHTML.txt
+cat HTML.txt | grep ss://
+cat HTML.txt | grep ssr://
+
 </textarea>
 <br>
 <br>
@@ -2199,6 +2237,15 @@ ip.addr == 160.19.103.122
 	<tr>
 		<td>
 			<img src="Manually_Made_Resource_DLL.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="ExternalKbd_HoldBS.png" />
 		</td>
 	</tr>
 </table>
@@ -2329,6 +2376,9 @@ ip.addr == 160.19.103.122
 		<td><b>[Virtual Memory - Paging File]</b></td>
 	</tr>
 </table>
+<br>
+<button onclick=get_ss_url()>Get SS://</button><br><textarea id="ss_url" style="height:45px;width:700px" value="123" readonly></textarea>
+<br>
 <br>
 <br>
 <b style="font-size:120%">Shortcuts</b>
