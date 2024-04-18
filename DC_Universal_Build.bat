@@ -131,11 +131,14 @@ IF !ERRORLEVEL! == 0 (
 
 CALL build_merge_pac.bat new %EC600U_VER% new_proj release
 REM CALL build_app.bat new %EC600U_VER% new_proj release
-pslist | grep -i UpgradeDownload > nul
-IF %ERRORLEVEL% EQU 1 (
-	START "" "%DC_WORKS_DIR%Tools\UPGRADEDOWNLOAD_R23.0.0001\Bin\UpgradeDownload.exe"
-) ELSE (
-	IF %ERRORLEVEL% EQU 0 A:\APPs\RBTray\64bit\RBtray.exe --restore "UpgradeDownload - R23.0.0001"
+
+IF %ERRORLEVEL% == 0 (
+	pslist | grep -i UpgradeDownload > nul
+	IF !ERRORLEVEL! EQU 1 (
+		START "" "%DC_WORKS_DIR%Tools\UPGRADEDOWNLOAD_R23.0.0001\Bin\UpgradeDownload.exe"
+	) ELSE (
+		IF !ERRORLEVEL! EQU 0 A:\APPs\RBTray\64bit\RBtray.exe --restore "UpgradeDownload - R23.0.0001"
+	)
 )
 EXIT /B 0
 
@@ -146,7 +149,7 @@ pslist | grep -i UpgradeDownload > nul
 IF %ERRORLEVEL% EQU 1 (
 	START "" "%DC_WORKS_DIR%Tools\UPGRADEDOWNLOAD_R23.0.0001\Bin\UpgradeDownload.exe"
 ) ELSE (
-	IF %ERRORLEVEL% EQU 0 A:\APPs\RBTray\64bit\RBtray.exe --restore "UpgradeDownload - R23.0.0001"
+	IF !ERRORLEVEL! EQU 0 A:\APPs\RBTray\64bit\RBtray.exe --restore "UpgradeDownload - R23.0.0001"
 )
 EXIT /B 0
 

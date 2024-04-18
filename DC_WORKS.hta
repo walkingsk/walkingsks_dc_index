@@ -711,6 +711,9 @@ Sub ExplorerAHKNppFileEncodingConvert(ApplicationPath)
 End Sub
 Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 	If ProjectType = "S11_5XX" Then
+		' calling javascript function inside VBScript
+		' alert("123")
+		mock_progress_bar(ProjectType)
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib'; pwd; if ^[ ^! -e '*.obj' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.obj`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`;""", 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib\current_target")
 		If TargetResultFile.Size = 0 Then
@@ -728,6 +731,7 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S16_4XX" Then
+		mock_progress_bar(ProjectType)
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib'; if ^[ ^! -e '*.o' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.o`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib\current_target")
 		If TargetResultFile.Size = 0 Then
@@ -746,6 +750,7 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S16_5XX" Then
+		mock_progress_bar(ProjectType)
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib'; if ^[ ^! -e '*.obj' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.obj`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib\current_target")
 		If TargetResultFile.Size = 0 Then
@@ -762,6 +767,7 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S17_123" Then
+		mock_progress_bar(ProjectType)
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\App Source\Lib'; if ^[ ^! -e '*.o' ^]; then ar x S17_Lib.lib; fi; for i in `ls *.o`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\App Source\Lib\current_target")
 		If TargetResultFile.Size = 0 Then
@@ -1276,6 +1282,30 @@ function prompt_search_result(result_prompt_id, msg)
 		// console.log("Delayed code execution after 5 seconds");
 	}, 5000);
 }
+function mock_progress_bar(project_name)
+{
+	progress_bar = document.getElementById(project_name.toLowerCase() + "_lib_api_search_progress");
+	
+	progress_bar.removeAttribute("hidden");
+	// progress_bar.style.width = "70px";
+	
+	setTimeout(function() {
+		progress_bar.style.width = "7%";
+		setTimeout(function() {
+			progress_bar.style.width = "30%";
+			setTimeout(function() {
+				progress_bar.style.width = "70%";
+				setTimeout(function() {
+					progress_bar.style.width = "100%";
+					progress_bar.setAttribute("hidden");
+					progress_bar.style.width = "0%";
+				}, 300);
+			}, 600);
+		}, 800);
+	}, 100);
+	
+	
+}
 function check_toggle_feishu()
 {
 	FeishuUsingWeb ^= 1;
@@ -1385,6 +1415,8 @@ function get_ss_url() {
 		<td>
 			<input id="s11_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s11_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S11_5XX','S11_523_15585',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
 			<div id="s11_5xx_lib_api_search_progress" style="border:1px solid #000000;width:10px;" hidden></div>
+			<!-- not supported by IE -->
+			<!-- <progress id="file" value="32" max="100">32%</progress><br> -->
 			<text id="s11_5xx_lib_api_search_prompt" style="font-family:consolas"></text>
 			
 		</td>
@@ -1460,6 +1492,7 @@ function get_ss_url() {
 	<tr>
 		<td>
 			<input id="s16_4xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_4xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_4XX','S16_4xx',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<div id="s16_4xx_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
 			<text id="s16_4xx_lib_api_search_prompt" style="font-family:consolas;"></text>
 		</td>
 	</tr>
@@ -1501,6 +1534,7 @@ function get_ss_url() {
 		<td>
 			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
 			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_5XX','S16-5XX_MP3_240220',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<div id="s16_5xx_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
 			<text id="s16_5xx_lib_api_search_prompt" style="font-family:consolas"></text>
 		</td>
 	</tr>
@@ -1552,7 +1586,8 @@ function get_ss_url() {
 	<tr>
 		<td>
 			<input id="s17_123_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s17_123_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S17_123','S17-123-old\\04-SDK',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
-			<text id="s17_123_lib_api_search_prompt" style="font-family:consolas;"></text>
+			<div id="s17_123_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
+			<text id="s17_123_lib_api_search_prompt" style="font-family:consolas; width:0px;"></text>
 		</td>
 	</tr>
 </table>
