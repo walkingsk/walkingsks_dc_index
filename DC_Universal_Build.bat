@@ -145,11 +145,14 @@ EXIT /B 0
 :S16_5XX_Build
 PUSHD "%SolutionDIR%\DevelopmentEnvironment\S16_523\EC600U_S16"
 CALL build_app.bat new EC600UEU_AB new_proj release
-pslist | grep -i UpgradeDownload > nul
-IF %ERRORLEVEL% EQU 1 (
-	START "" "%DC_WORKS_DIR%Tools\UPGRADEDOWNLOAD_R23.0.0001\Bin\UpgradeDownload.exe"
-) ELSE (
-	IF !ERRORLEVEL! EQU 0 A:\APPs\RBTray\64bit\RBtray.exe --restore "UpgradeDownload - R23.0.0001"
+
+IF %ERRORLEVEL% == 0 (
+	pslist | grep -i UpgradeDownload > nul
+	IF !ERRORLEVEL! EQU 1 (
+		START "" "%DC_WORKS_DIR%Tools\UPGRADEDOWNLOAD_R23.0.0001\Bin\UpgradeDownload.exe"
+	) ELSE (
+		IF !ERRORLEVEL! EQU 0 A:\APPs\RBTray\64bit\RBtray.exe --restore "UpgradeDownload - R23.0.0001"
+	)
 )
 EXIT /B 0
 

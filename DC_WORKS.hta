@@ -963,11 +963,17 @@ End Sub
 	'ObjShell.Run "CMD /C ECHO " & String & "| clip", 0
 'End Sub
 
+Sub CopyStringToClipboard(String)
+	ObjShell.Run "powershell.exe -command ""Set-Clipboard -Value '" & String & "'""", 0, True
+End Sub
+
 Sub Run5XXTracerUart()
+	ObjShell.Run "powershell.exe -ex unrestricted -Command ""Set-Location " & ScriptDIR & "\Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\profiles; (Get-Content 8910.cwp) -replace '(?<=<lastcomport>)[0-9]+(?=</lastcomport>)', '48' | Set-Content .\8910.cwp""", 0, True
 	ExplorerShellExecute "Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\coolwatcher_debughost.exe", "", -1, "open", 1
 	CopyStringToClipboard "debug_uart:DC_PrintfStr_d"
 End Sub
 Sub Run5XXTracerUSB()
+	ObjShell.Run "powershell.exe -ex unrestricted -Command ""Set-Location " & ScriptDIR & "\Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\profiles; (Get-Content 8910.cwp) -replace '(?<=<lastcomport>)[0-9]+(?=</lastcomport>)', '22' | Set-Content .\8910.cwp""", 0, True
 	ExplorerShellExecute "Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\coolwatcher_usb.exe", "", -1, "open", 1
 	CopyStringToClipboard "debug_uart:DC_PrintfStr_d"
 End Sub
@@ -1312,10 +1318,13 @@ function check_toggle_feishu()
 	document.getElementById("feishu_using_web").checked = FeishuUsingWeb;
 }
 
+// This method will make DC_WORKS scroll to the button after the click
+// disable_scroll and enable_scroll don't work in this case
+/*
 function CopyStringToClipboard(text) {
 	// Create a textarea element
 	var textarea = document.createElement("textarea");
-
+	
 	// Set the value of the textarea to the specified text
 	textarea.value = text;
 
@@ -1330,7 +1339,11 @@ function CopyStringToClipboard(text) {
 
 	// Remove the textarea from the document body
 	document.body.removeChild(textarea);
+	
 }
+*/
+
+
 // Function to disable scrolling
 function disable_scroll() {
 	document.body.style.overflow = 'hidden';
