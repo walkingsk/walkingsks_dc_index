@@ -278,6 +278,7 @@
 	});
 	shortcut.add("CTRL+N", function() {
 		scroll_elem_into_view("notes");
+		CopyStringToClipboard("debug_uart:DC_PrintfStr_d");
 	});
 	shortcut.add("CTRL+O", function() {
 		scroll_elem_into_view("overseas");
@@ -1410,6 +1411,7 @@ function get_ss_url() {
 		<td>
 			<img src="S11_523.png" class="refimg" onmouseover="this.src='S11_523_OUT_PAK.png'" onmouseout="this.src='S11_523.png'" onclick=ExplorerShellExecute("S11-523-0055-IDE_15585.rar","",-1,"open",1) /><br>
 			<!-- &emsp;&emsp;[<a onclick=ExplorerFTP("S11_5XX")>S11_5XX</a>]<br> -->
+			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S11_5XX") />
 			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S11_523_15585") />
 			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S11_523_15585") />
 			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S11_523_15585") />
