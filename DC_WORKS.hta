@@ -1176,12 +1176,14 @@ Sub KillGitExe()
 		If InStr(1, objProcess.CommandLine, "git fsmonitor--daemon run --detach --ipc-threads", vbTextCompare) > 0 Then
 			' Found a matching process, terminate it
 			objProcess.Terminate()
-			WScript.Echo "Process terminated: " & objProcess.CommandLine
+			' WScript.Echo "Process terminated: " & objProcess.CommandLine
 		End If
 	Next
 
 	' Clean up
 	Set objWMIService = Nothing
+	Set colProcesses = Nothing
+	Set objProcess = Nothing
 End Sub
 
 Sub Clean8910TracerLogs()
@@ -1520,7 +1522,10 @@ function get_ss_url() {
 			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V1.0_240220.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240220]</b></a>
 		</td>
 		<td>
-			<a onclick=ExplorerShellExecute("S16-5XX_V2.0_240326.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240326]<br>16M RAM & 8M Flash</b></a>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V1.0_240326.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240326]</b></a>
+		</td>
+		<td>
+			<a onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240507]<br>16M RAM & 8M Flash</b></a>
 		</td>
 	</tr>
 	<tr>
@@ -1534,21 +1539,32 @@ function get_ss_url() {
 			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
 		</td>
 		<td>
-			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V2.0_240326.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V2.0_240326.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
+			<img name="mid_versions" src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240326") />
+			<img name="mid_versions" src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240326") />
+			<img name="mid_versions" src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240326") />
+			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240326") />
+			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+		</td>
+		<td>
+			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1) /><br>
 			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
-			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240326") />
-			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240326") />
-			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240326") />
-			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240326") />
-			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240507") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240507") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240507") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240507") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240507\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
 		</td>
 	</tr>
 	<tr>
 		<td>
 		</td>
 		<td>
+		</td>
+		<td>
 			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
-			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_5XX','S16-5XX_MP3_240220',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_5XX','S16-5XX_MP3_240507',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
 			<div id="s16_5xx_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
 			<text id="s16_5xx_lib_api_search_prompt" style="font-family:consolas"></text>
 		</td>
@@ -1832,7 +1848,7 @@ function get_ss_url() {
 &emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\20140103_0943.png","",-1,"open",1)><b>[Chat1]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\20140104_1520.png","",-1,"open",1)><b>[Chat2]</b></a><br>
 <br>
 <b>[S16_523_Masarat_Libya]</b> <img src="Flag_of_Libya.png" class="refico16" onclick=ExplorerAHK("Edge_WhatsApp") /><br>
-&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\IOT_Integration.pdf","",-1,"open",1)><b>[IOT_Integration.pdf]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\S16_Q_A_07-01-2024.docx","",-1,"open",1)><b>[S16_Q_A_07-01-2024.docx]</b></a><br>
+&emsp;&emsp;<a onclick=ExplorerShellExecute("Overseas_Projects\\S16_5XX_Masarat_LibyaX\\IOT_Integration.pdf","",-1,"open",1)><b>[IOT_Integration.pdf]</b></a> <a onclick=ExplorerShellExecute("Overseas_Projects\\S16_Q_A_07-01-2024.docx","",-1,"open",1)><b>[S16_Q_A_07-01-2024.docx]</b></a><br>
 &emsp;&emsp;<img src="Kbd.ico" class="refico32" onclick=ExplorerShellExecute("S16_523_Ext_Kbd.png","",-1,"open",1) />
 
 <img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("Overseas_Projects\\S16_5XX_Masarat_LibyaX") />
@@ -1891,6 +1907,7 @@ DTO = Data Transfer Object
 	<tr>
 		<td>
 			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("Overseas_Projects\\S11_523_LA_Hyuntech") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("Overseas_Projects\\S11_523_LA_Hyuntech") />
 			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("Overseas_Projects\\S11_523_LA_Hyuntech") />
 			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("Overseas_Projects\\S11_523_LA_Hyuntech") />
 		</td>
@@ -1902,6 +1919,15 @@ DTO = Data Transfer Object
 	</tr>
 </table>
 <br>
+<table>
+	<tr>
+		<td>
+			<img src="Overseas_Projects\\S11_523_LA_Hyuntech\\New_Numbers.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
 <br>
 <br>
 <br>
@@ -1909,7 +1935,7 @@ DTO = Data Transfer Object
 <br>
 <!-- <object data="./DC_WORKS.ini" width="300" height="200">Not Supported</object> -->
 <!-- <textarea style="width:400px;height:60px;font-size:16px;text-align:center" readonly > -->
-<textarea style="width:1500px;height:6000px;font-size:16px" readonly >
+<textarea style="width:1500px;height:7200px;font-size:16px" readonly >
 CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
 if exist F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application RD /S /Q F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application
 copy /y F:\_____\S16_5xx\AppSource\Application_2023.9.20\ql-application F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\
@@ -2189,7 +2215,12 @@ debug_uart:DC_PrintfStr_d 19 Input PIN: 654321
     "merchantId": "123456",
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5M2Y4MDllOC1jYjYwLTRiODEtOWY5NC1hZWUxZmYyNjBhYTUiLCJBcHBJZCI6IjY1IiwiTWVyY2hhbnRJZCI6IjExOTAyMCIsIlVUSUQiOiJQT1MiLCJQT1NJZCI6IjI4MTIxOTYiLCJQSUQiOiIzMDAiLCJBdXRoU3RhdGVQYXltZW50IjoiNCIsImV4cCI6MTcxMzc2MTA4MiwiaXNzIjoibWl0dC1kZXYiLCJhdWQiOiJtaXR0LWRldiJ9.GYil5VVyJ6NWGZaC0npnXmJ-uevIncXKBbxbmA874Ko"
 }
-
+{
+    "status": "success",
+    "message": "Login successful",
+    "merchantId": "123456",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmY2M0YmZjNi1jY2ZkLTRiYjYtYTc1MS1lMGFmZjYzMjZkYjQiLCJTTiI6IjU1NDY1MjMwMDAwMTUzIiwiQXV0aFN0YXRlUGF5bWVudCI6IjIiLCJleHAiOjE3MTU4MzQ1NjYsImlzcyI6Im1pdHQtZGV2IiwiYXVkIjoibWl0dC1kZXYifQ.ojcYR5KEp6-YmhMe8FF-7h5ooj361Wmf-HK3velx81Y"
+}
 
 LMP 11.x – Bluetooth 5.2
 LMP 10.x – Bluetooth 5.1
@@ -2219,6 +2250,55 @@ ffmpeg -i input.mp4 -ss 00:00:10 -to 00:00:30 -c:v copy -c:a copy output.mp4
 curl -L https://github.com/Alvin9999/new-pac/wiki/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7 -x127.0.0.1:9910 -oHTML.txt
 cat HTML.txt | grep ss://
 cat HTML.txt | grep ssr://
+
+{
+    "transactionReferenceNumber": "bee5f628-25c5-43a4-ad49-a91e8c534103",
+    "pollingInterval": "00:00:50",
+    "timeout": "00:01:00",
+    "status": 1
+}
+
+
+debug_uart:DC_PrintfStr_d 19 -- transfer_amt_to_list line:744 digital_buffer neuve-(c)iento(s) num95 mil neuve-(c)iento(s) num48 soles y num28 cents --
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file neuve-(c)iento(s)--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file c900.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file num95--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file num95.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file mil--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file mil.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file neuve-(c)iento(s)--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file c900.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file num48--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file num48.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file soles--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file soles.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file y--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file y.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file num28--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file num28.mp3--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:505 before dc_find_digital_file cents--
+debug_uart:DC_PrintfStr_d 19 -- dc_find_digital_file line:695 dc_find_digital_file cents.mp3--
+debug_uart:DC_PrintfStr_d 19 k=0,digit file name =c900.mp3
+debug_uart:DC_PrintfStr_d 19 k=1,digit file name =num95.mp3
+debug_uart:DC_PrintfStr_d 19 k=2,digit file name =mil.mp3
+debug_uart:DC_PrintfStr_d 19 k=3,digit file name =c900.mp3
+debug_uart:DC_PrintfStr_d 19 k=4,digit file name =num48.mp3
+debug_uart:DC_PrintfStr_d 19 k=5,digit file name =soles.mp3
+debug_uart:DC_PrintfStr_d 19 k=6,digit file name =y.mp3
+debug_uart:DC_PrintfStr_d 19 k=7,digit file name =num28.mp3
+debug_uart:DC_PrintfStr_d 19 k=8,digit file name =cents.mp3
+debug_uart:DC_PrintfStr_d 19 voicebuf=[c900.mp3|num95.mp3|mil.mp3|c900.mp3|num48.mp3|soles.mp3|y.mp3|num28.mp3|cents.mp3|]
+debug_uart:DC_PrintfStr_d 19 Suffix2Msglen: 8
+debug_uart:DC_PrintfStr_d 19 Suffix2Msg: Thankyou
+debug_uart:DC_PrintfStr_d 19 playstring Received&c900.mp3|num95.mp3|mil.mp3|c900.mp3|num48.mp3|soles.mp3|y.mp3|num28.mp3|cents.mp3|$Thankyou
+
+
+Dell Inspiron Fn Toggle: [Fn + Esc]
+
+aria2c --follow-torrent=mem "https://download.gimp.org/gimp/v2.10/windows/gimp-2.10.38-setup.exe.torrent"
+
+https://210.22.154.76/svn/dc_pos_project/接入项目
+https://192.168.100.19/svn/dc_pos_project/接入项目
 
 </textarea>
 <br>
@@ -2352,6 +2432,11 @@ cat HTML.txt | grep ssr://
 			<img style="width:32px" src="audacity.ico" onclick=Exec("APPs\\Audacity\\audacity.exe",-1) /> <b>Audacity 2.0.6</b>
 		</div>
 	</tr>
+	<!-- <tr> -->
+		<!-- <div> -->
+			<!-- <img style="width:32px" src="Bandizip.ico" onclick=Exec("APPs\\BANDIZIP\\Bandizip.x86.exe",-1) /> <b>Banzizip 7.32</b> -->
+		<!-- </div> -->
+	<!-- </tr> -->
 	<tr>
 		<!-- <td><img src="CMD.ico" class="refico24" onclick=Run("CMD.exe&#32;/K") /></td> -->
 		<td><img src="CMD.ico" class="refico24" onclick=ExplorerCMDWithLaunchDIR(document.getElementById('sel_cmd_dirs').value) ></td>
@@ -2368,6 +2453,7 @@ cat HTML.txt | grep ssr://
 						<option value="S16_5XX_audio_15397\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5XX_audio_15397</option>
 						<option value="S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240220</option>
 						<option value="S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240326</option>
+						<option value="S16-5XX_MP3_240507\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240507</option>
 					</select>
 				<br><br>
 			</form>
@@ -2388,6 +2474,9 @@ cat HTML.txt | grep ssr://
 						<option value="S16_5xx_AUDIO\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5xx_AUDIO</option>
 						<option value="S16_5XX_audio_15397\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16_5XX_audio_15397</option>
 						<option value="S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240220</option>
+						<option value="S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240326</option>
+						<option value="S16-5XX_MP3_240507\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240507</option>
+						<option value="Runtime\\alink\\proj">proj</option>
 					</select>
 				<br><br>
 			</form>
