@@ -611,6 +611,12 @@ Sub Exec(CMD,Local)
 		ObjShell.Exec CMD
 	End If
 End Sub
+Sub RunMQTTExplorer()
+	ObjShell.Run """" & ScriptDIR & "\RunTime\node-v20.11.1-win-x64\node.exe"" """ & ScriptDIR & "\MQTT\MQTT-Explorer\node_modules\electron\cli.js"" """ & ScriptDIR & "\MQTT\MQTT-Explorer"""
+End Sub
+Sub RunMQTTX()
+	ObjShell.Run ScriptDIR & "\MQTT\MQTTX\MQTTX.exe"
+End Sub
 Sub ExecLocaleZhTW(Path, Params)
 	ObjShell.Exec ScriptDIR & "\APPs\Locale_Emulator\LEProc.exe -runas 1bdfb941-7ab1-426e-b4d1-38321fc6ce1e """ & ScriptDIR & "\" & Path & """ " & Params
 End Sub
@@ -710,15 +716,23 @@ Sub ExplorerAHKNppFileEncodingConvert(ApplicationPath)
 	
 	ExplorerShellExecute "NppPythonScriptEncodingConv.ahk", "", -1, "open", 1
 End Sub
-Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
+Function GetCFileStringFromObjString(TargetResultObjFileName)
+	GetCFileStringFromObjString = ""
+	If Right(TargetResultObjFileName, 4) = ".obj" Then
+		GetCFileStringFromObjString= Mid(TargetResultObjFileName, 1, Len(TargetResultObjFileName) - 4)
+	ElseIf Right(TargetResultObjFileName, 2) = ".o" Then
+		GetCFileStringFromObjString= Mid(TargetResultObjFileName, 1, Len(TargetResultObjFileName) - 2)
+	End If
+End Function
+Sub FindDisassmblyLibApi(ProjectType, FolderName, SearchedFunction)
 	If ProjectType = "S11_5XX" Then
 		' calling javascript function inside VBScript
 		' alert("123")
-		mock_progress_bar(ProjectType)
+		Call mock_progress_bar(ProjectType, "LibAPI")
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib'; pwd; if ^[ ^! -e '*.obj' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.obj`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`;""", 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib\current_target")
 		If TargetResultFile.Size = 0 Then
-			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			Call prompt_search_result(ProjectType, "LibAPI", SearchedFunction + " not found!")
 			
 		Else
 			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib\current_target", 1, False)
@@ -726,18 +740,19 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 			TargetResultFileHandle.Close
 			Set TargetResultFileHandle = Nothing
 			
-			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			
+			Call prompt_search_result(ProjectType, "LibAPI", GetCFileStringFromObjString(TargetResultObjFileName))
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S11_523\EC600U_S11\ql-application\Application\ApiLib"
 			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S16_4XX" Then
-		mock_progress_bar(ProjectType)
+		Call mock_progress_bar(ProjectType, "LibAPI")
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib'; if ^[ ^! -e '*.o' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.o`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib\current_target")
 		If TargetResultFile.Size = 0 Then
 			' alert("empty")
-			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			Call prompt_search_result(ProjectType, "LibAPI", SearchedFunction + " not found!")
 			
 		Else
 			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib\current_target", 1, False)
@@ -745,42 +760,75 @@ Sub FindDisassmbly(ProjectType, FolderName, SearchedFunction)
 			TargetResultFileHandle.Close
 			Set TargetResultFileHandle = Nothing
 			' alert("found")
-			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			
+			Call prompt_search_result(ProjectType, "LibAPI", GetCFileStringFromObjString(TargetResultObjFileName))
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_423\Air780e_S16\Application\ApiLib"
 			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S16_5XX" Then
-		mock_progress_bar(ProjectType)
+		Call mock_progress_bar(ProjectType, "LibAPI")
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib'; if ^[ ^! -e '*.obj' ^]; then ar x libapiinterface.a ; fi; for i in `ls *.obj`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib\current_target")
 		If TargetResultFile.Size = 0 Then
-			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			Call prompt_search_result(ProjectType, "LibAPI", SearchedFunction + " not found!")
 			
 		Else
 			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib\current_target", 1, False)
 			TargetResultObjFileName = TargetResultFileHandle.ReadLine
 			TargetResultFileHandle.Close
 			Set TargetResultFileHandle = Nothing
-			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			
+			Call prompt_search_result(ProjectType, "LibAPI", GetCFileStringFromObjString(TargetResultObjFileName))
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application\Application\ApiLib"
 			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
 	ElseIf ProjectType = "S17_123" Then
-		mock_progress_bar(ProjectType)
+		Call mock_progress_bar(ProjectType, "LibAPI")
 		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\App Source\Lib'; if ^[ ^! -e '*.o' ^]; then ar x S17_Lib.lib; fi; for i in `ls *.o`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`; """, 0, True
 		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\App Source\Lib\current_target")
 		If TargetResultFile.Size = 0 Then
-			Call prompt_search_result(ProjectType, SearchedFunction + " not found!")
+			Call prompt_search_result(ProjectType, "LibAPI", SearchedFunction + " not found!")
 			
 		Else
 			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\App Source\Lib\current_target", 1, False)
 			TargetResultObjFileName = TargetResultFileHandle.ReadLine
 			TargetResultFileHandle.Close
 			Set TargetResultFileHandle = Nothing
-			Call prompt_search_result(ProjectType, TargetResultObjFileName)
+			
+			Call prompt_search_result(ProjectType, "LibAPI", GetCFileStringFromObjString(TargetResultObjFileName))
 			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\App Source\Lib"
+			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
+		End If
+		Set TargetResultFile = Nothing
+	End If
+End Sub
+
+Sub FindDisassmbly8XX(ProjectType, FolderName, SearchedFunction, LibType)
+	If LibType = "LibAPI" Then
+		archive_name = "libapiinterface.a"
+	ElseIf LibType = "PaymentCore" Then
+		archive_name = "libCoreCode.a"
+	End If
+	
+	If ProjectType = "S16_8XX" Then
+		' calling javascript function inside VBScript
+		Call mock_progress_bar(ProjectType, LibType)
+		' mock_progress_bar(ProjectType)
+		ObjShell.Run "CMD.exe /C " & ScriptDIR & "\APPs\msys64\msys2_shell_hidden_wait.cmd -c ""cd '" + ScriptDIR + "\" + FolderName + "\Application\ql-application\Application\ApiLib'; pwd; if ^[ ^! -e '*.obj' ^]; then ar x " + archive_name + " ; fi; for i in `ls *.obj`; do nm ""$i"" | grep 'T " + SearchedFunction + "' && echo $i; done | sed -n '2p' > current_target; ct=`cat < current_target`;""", 0, True
+		Set TargetResultFile = ObjFS.GetFile(ScriptDIR + "\" + FolderName + "\Application\ql-application\Application\ApiLib\current_target")
+		If TargetResultFile.Size = 0 Then
+			Call prompt_search_result(ProjectType, LibType, SearchedFunction + " not found!")
+			
+		Else
+			Set TargetResultFileHandle = ObjFS.OpenTextFile(ScriptDIR + "\" + FolderName + "\Application\ql-application\Application\ApiLib\current_target", 1, False)
+			TargetResultObjFileName = TargetResultFileHandle.ReadLine
+			TargetResultFileHandle.Close
+			Set TargetResultFileHandle = Nothing
+			
+			Call prompt_search_result(ProjectType, LibType, GetCFileStringFromObjString(TargetResultObjFileName))
+			ObjShell.CurrentDirectory = ScriptDIR + "\" + FolderName + "\Application\ql-application\Application\ApiLib"
 			ObjShell.Exec "A:\APPs\Reverse\IDAPro\ida.exe -A -S""lib_api_goto.idc " + SearchedFunction + """ " + TargetResultObjFileName + " -o " + TargetResultObjFileName + ".idb"
 		End If
 		Set TargetResultFile = Nothing
@@ -972,11 +1020,17 @@ Sub Run5XXTracerUart()
 	ObjShell.Run "powershell.exe -ex unrestricted -Command ""Set-Location " & ScriptDIR & "\Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\profiles; (Get-Content 8910.cwp) -replace '(?<=<lastcomport>)[0-9]+(?=</lastcomport>)', '48' | Set-Content .\8910.cwp""", 0, True
 	ExplorerShellExecute "Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\coolwatcher_debughost.exe", "", -1, "open", 1
 	CopyStringToClipboard "debug_uart:DC_PrintfStr_d"
+	
+	ObjShell.Run "PING -n 15 localhost", 0, True
+	ObjShell.Exec ScriptDIR & "\Set5XXTracerTitleCOM48.exe"
 End Sub
 Sub Run5XXTracerUSB()
 	ObjShell.Run "powershell.exe -ex unrestricted -Command ""Set-Location " & ScriptDIR & "\Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\profiles; (Get-Content 8910.cwp) -replace '(?<=<lastcomport>)[0-9]+(?=</lastcomport>)', '22' | Set-Content .\8910.cwp""", 0, True
 	ExplorerShellExecute "Tools\8910_cooltools-win32_custom_P3.R2.0.0005-1\coolwatcher_usb.exe", "", -1, "open", 1
 	CopyStringToClipboard "debug_uart:DC_PrintfStr_d"
+	
+	ObjShell.Run "PING -n 25 localhost", 0, True
+	ObjShell.Exec ScriptDIR & "\Set5XXTracerTitleCOM22.exe"
 End Sub
 
 Sub Calc()
@@ -1240,6 +1294,18 @@ function hta_onload()
 	
 	FeishuUsingWeb = document.getElementById("feishu_using_web").checked;
 	//disable_scroll();
+	document.getElementById('MQTTExplorer').childNodes[1].addEventListener('click', RunMQTTExplorer_js_wrapper);
+	document.getElementById('MQTTExplorer').childNodes[3].addEventListener('click', RunMQTTExplorer_js_wrapper);
+	document.getElementById('MQTTX').childNodes[1].addEventListener('click', RunMQTTX_js_wrapper);
+	document.getElementById('MQTTX').childNodes[3].addEventListener('click', RunMQTTX_js_wrapper);
+}
+function RunMQTTExplorer_js_wrapper()
+{
+	RunMQTTExplorer();
+}
+function RunMQTTX_js_wrapper()
+{
+	RunMQTTX();
 }
 function hta_onunload()
 {
@@ -1276,24 +1342,40 @@ function update_config_select_prefs_hide_s16_5xx_mid_versions()
 	WriteConfigFile();
 	window.location.reload(true);
 }
-function prompt_search_result(result_prompt_id, msg)
+function prompt_search_result(result_prompt_id, libtype, msg)
 {
+	if (libtype == "LibAPI")
+	{
+		lib_string = "lib_api";
+	}
+	else if (libtype == "PaymentCore")
+	{
+		lib_string = "core_code";
+	}
 	result_prompt_id = result_prompt_id.toLowerCase();
 	// document.getElementById(result_prompt_id + "_lib_api_search").readOnly = true;
-	document.getElementById(result_prompt_id + "_lib_api_search_prompt").textContent = msg;
+	document.getElementById(result_prompt_id + "_" + lib_string + "_search_prompt").textContent = msg;
 	setTimeout(function() {
 		// Code to execute after the delay
 		
-		document.getElementById(result_prompt_id + "_lib_api_search").select();
+		document.getElementById(result_prompt_id + "_" + lib_string + "_search").select();
 		// document.getElementById(result_prompt_id).textContent = "";
-		document.getElementById(result_prompt_id + "_lib_api_search_prompt").style.color = "gray";
+		document.getElementById(result_prompt_id + "_" + lib_string + "_search_prompt").style.color = "gray";
 		// document.getElementById(result_prompt_id + "_lib_api_search").readOnly = false;
 		// console.log("Delayed code execution after 5 seconds");
 	}, 5000);
 }
-function mock_progress_bar(project_name)
+function mock_progress_bar(project_name, libtype)
 {
-	progress_bar = document.getElementById(project_name.toLowerCase() + "_lib_api_search_progress");
+	if (libtype == "LibAPI")
+	{
+		lib_string = "lib_api";
+	}
+	else if (libtype == "PaymentCore")
+	{
+		lib_string = "core_code";
+	}
+	progress_bar = document.getElementById(project_name.toLowerCase() + "_" + lib_string + "_search_progress");
 	
 	progress_bar.removeAttribute("hidden");
 	// progress_bar.style.width = "70px";
@@ -1425,12 +1507,12 @@ function get_ss_url() {
 		<td>
 		</td>
 		<td>
-			<!-- <input name="mid_versions" id="s11_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s11_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S11_5XX','S11-5XX',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br> -->
+			<!-- <input name="mid_versions" id="s11_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s11_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmblyLibApi('S11_5XX','S11-5XX',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br> -->
 			<!-- <div name="mid_versions" id="s11_5xx_lib_api_search_progress" style="border:1px solid #000000;width:10px;" hidden></div> -->
 			<!-- <text name="mid_versions" id="s11_5xx_lib_api_search_prompt" style="font-family:consolas"></text> -->
 		</td>
 		<td>
-			<input id="s11_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s11_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S11_5XX','S11_523_15585',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<input id="s11_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s11_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmblyLibApi('S11_5XX','S11_523_15585',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
 			<div id="s11_5xx_lib_api_search_progress" style="border:1px solid #000000;width:10px;" hidden></div>
 			<!-- not supported by IE -->
 			<!-- <progress id="file" value="32" max="100">32%</progress><br> -->
@@ -1508,7 +1590,7 @@ function get_ss_url() {
 	</tr>
 	<tr>
 		<td>
-			<input id="s16_4xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_4xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_4XX','S16_4xx',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<input id="s16_4xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_4xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmblyLibApi('S16_4XX','S16_4xx',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
 			<div id="s16_4xx_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
 			<text id="s16_4xx_lib_api_search_prompt" style="font-family:consolas;"></text>
 		</td>
@@ -1525,7 +1607,10 @@ function get_ss_url() {
 			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V1.0_240326.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240326]</b></a>
 		</td>
 		<td>
-			<a onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240507]<br>16M RAM & 8M Flash</b></a>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240507]<br>16M RAM & 8M Flash</b></a>
+		</td>
+		<td>
+			<a onclick=ExplorerShellExecute("S16-5XX_V4.0_240514.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240514]<br>16M RAM & 8M Flash</b></a>
 		</td>
 	</tr>
 	<tr>
@@ -1548,13 +1633,22 @@ function get_ss_url() {
 			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
 		</td>
 		<td>
-			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1) /><br>
+			<img name="mid_versions" src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
+			<img name="mid_versions" src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240507") />
+			<img name="mid_versions" src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240507") />
+			<img name="mid_versions" src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240507") />
+			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240507") />
+			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240507\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+		</td>
+		<td>
+			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V4.0_240514.rar","",-1,"open",1) /><br>
 			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
-			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240507") />
-			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240507") />
-			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240507") />
-			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240507") />
-			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240507\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-5XX_MP3_240514") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-5XX_MP3_240514") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-5XX_MP3_240514") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240514") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240514\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
 		</td>
 	</tr>
 	<tr>
@@ -1563,10 +1657,57 @@ function get_ss_url() {
 		<td>
 		</td>
 		<td>
+		</td>
+		<td>
 			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
-			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S16_5XX','S16-5XX_MP3_240507',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmblyLibApi('S16_5XX','S16-5XX_MP3_240507',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
 			<div id="s16_5xx_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
 			<text id="s16_5xx_lib_api_search_prompt" style="font-family:consolas"></text>
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<a><b>[S16_8XX]</b></a>
+		</td>
+		<td>
+		</td>
+		<td>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<img src="S16_8XX_BACK.png" class="refimg" /><br>
+			<!-- <img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") /> -->
+			<img src="VS.ico" class="refico24" onclick=ExplorerSrcBrowserVS("S16-8XX") />
+			<img src="Understand.ico" class="refico24" onclick=ExplorerSrcBrowserUND("S16-8XX") />
+			<img src="ExplorerFolder.ico" class="refico24" onclick=ExplorerLocal("S16-8XX") />
+			<img src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-8XX") />
+			<img src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-8XX\\Application\\ql-application\\Application") />
+		</td>
+		<td>
+		</td>
+		<td>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
+			<input id="s16_8xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_8xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly8XX('S16_8XX','S16-8XX',this.value,'LibAPI'); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<div id="s16_8xx_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
+			<text id="s16_8xx_lib_api_search_prompt" style="font-family:consolas"></text>
+			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
+			<br>
+			<input id="s16_8xx_core_code_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_8xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly8XX('S16_8XX','S16-8XX',this.value,'PaymentCore'); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<div id="s16_8xx_core_code_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
+			<text id="s16_8xx_core_code_search_prompt" style="font-family:consolas"></text>
+		</td>
+		<td>
+		</td>
+		<td>
 		</td>
 	</tr>
 </table>
@@ -1616,7 +1757,7 @@ function get_ss_url() {
 	</tr>
 	<tr>
 		<td>
-			<input id="s17_123_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s17_123_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmbly('S17_123','S17-123-old\\04-SDK',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
+			<input id="s17_123_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s17_123_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmblyLibApi('S17_123','S17-123-old\\04-SDK',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
 			<div id="s17_123_lib_api_search_progress" style="border:1px solid #000000; width:0px;" hidden></div>
 			<text id="s17_123_lib_api_search_prompt" style="font-family:consolas; width:0px;"></text>
 		</td>
@@ -1923,6 +2064,16 @@ DTO = Data Transfer Object
 	<tr>
 		<td>
 			<img src="Overseas_Projects\\S11_523_LA_Hyuntech\\New_Numbers.png" />
+		</td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<td>
+			<img src="Overseas_Projects\\S11_523_LA_Hyuntech\\Application.zip.png" />
+		</td>
+		<td>
+			<img src="Overseas_Projects\\S11_523_LA_Hyuntech\\Application.code_check.png" />
 		</td>
 	</tr>
 </table>
@@ -2300,6 +2451,11 @@ aria2c --follow-torrent=mem "https://download.gimp.org/gimp/v2.10/windows/gimp-2
 https://210.22.154.76/svn/dc_pos_project/接入项目
 https://192.168.100.19/svn/dc_pos_project/接入项目
 
+usr\bin\mintty.exe -p 489,215 --nodaemon -o AppID=GitForWindows.Bash -o AppLaunchCmd="A:\Program Files\Git\git-bash.exe" -o AppName="Git Bash" -i "A:\Program Files\Git\git-bash.exe" --store-taskbar-properties -- /usr/bin/bash --login -i  
+
+
+svn ls --non-interactive --trust-server-cert-failures="unknown-ca,cn-mismatch,expired,not-yet-valid,other" https://210.22.154.76/svn/dc_mobile/trunk/Layer/Module/ApiInterface/S16/S_SpeakerPayment
+
 </textarea>
 <br>
 <br>
@@ -2380,6 +2536,49 @@ https://192.168.100.19/svn/dc_pos_project/接入项目
 	</tr>
 </table>
 <br>
+<b>
+Finnally I found the difference (at least one) between %V and %W
+right-click on a folder,<br>
+"%W" represents the full path for the parent folder of the clicked folder<br>
+"%V" represents the full path of the clicked folder
+</b>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="WindowsRegContextMenu%V%WDiff.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="UTF8_GBK_UCS2.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="LA_Mobile_IPv4.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="LA_Mobile_IPv4_Changed_After_Reboot.png" />
+		</td>
+	</tr>
+</table>
+<br>
 <br>
 <form onchange=document.getElementById('textarea_reversed_api').value=ReadAllFromTextFile(document.getElementById('reversed_api').value)>
 	<label><b>Reversed API: </b></label>
@@ -2426,12 +2625,35 @@ https://192.168.100.19/svn/dc_pos_project/接入项目
 <!-- <img src="APPs\\msys64\\msys2.ico" class="refico24" onclick=ExplorerShellExecute("msys2.exe","","APPs\\msys64","open",1) /> -->
 <!-- <img src="RegeditFind.ico" class="refico24" onclick=alert("1&#32;2") /> -->
 
-<table>
+<table style="width:800px">
+	<tr>
+		<td>
+			<!-- <div onclick=RunMQTTExplorer()> -->
+			<div id="MQTTExplorer">
+				<img style="width:20px" src="./MQTT/MQTT-Explorer/res/icon.png" /> <b>MQTT Explorer 0.4.0</b>
+			</div>
+		</td>
+		<td>
+			<!-- <div onclick=RunMQTTX()> -->
+			<div id="MQTTX">
+				<img style="width:24px" src="./MQTT/MQTTX/MQTTX.ico" /> <b>MQTTX 1.9.10</b>
+			</div>
+		</td>
+	</tr>
 	<tr>
 		<div>
-			<img style="width:32px" src="audacity.ico" onclick=Exec("APPs\\Audacity\\audacity.exe",-1) /> <b>Audacity 2.0.6</b>
+			<img style="width:24px" src="audacity.ico" onclick=Exec("APPs\\Audacity\\audacity.exe",-1) /> <b>Audacity 2.0.6</b>
 		</div>
 	</tr>
+	<tr>
+		<td>
+			<div>
+				<img style="width:24px" src="bmfont64.ico" onclick=Exec("Tools\\BMFont\\bmfont64X.exe",-1) /> <b>BMFont 1.14b</b>
+			</div>
+		</td>
+	</tr>
+</table>
+<table>
 	<!-- <tr> -->
 		<!-- <div> -->
 			<!-- <img style="width:32px" src="Bandizip.ico" onclick=Exec("APPs\\BANDIZIP\\Bandizip.x86.exe",-1) /> <b>Banzizip 7.32</b> -->
@@ -2476,7 +2698,7 @@ https://192.168.100.19/svn/dc_pos_project/接入项目
 						<option value="S16-5XX_MP3_240220\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240220</option>
 						<option value="S16-5XX_MP3_240326\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240326</option>
 						<option value="S16-5XX_MP3_240507\\DevelopmentEnvironment\\S16_523\\EC600U_S16">S16-5XX_MP3_240507</option>
-						<option value="Runtime\\alink\\proj">proj</option>
+						<!-- <option value="APPs\\alink\\proj">proj</option> -->
 					</select>
 				<br><br>
 			</form>
@@ -2513,6 +2735,10 @@ https://192.168.100.19/svn/dc_pos_project/接入项目
 	<tr onclick=ExplorerRegistryWithLastKey("Computer\\HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session&#32;Manager\\Memory&#32;Management") >
 		<td><img src="RegeditFind.ico" class="refico24"/></td>
 		<td><b>[Virtual Memory - Paging File]</b></td>
+	</tr>
+	<tr onclick=KillGitExe() >
+		<td><img src="git.ico" class="refico24"/></td>
+		<td><b>[Kill Git Processes]</b></td>
 	</tr>
 </table>
 <br>
