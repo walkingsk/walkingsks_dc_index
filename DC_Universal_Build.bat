@@ -1,6 +1,7 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 SET DC_WORKS_DIR=%~DP0
+REM [SolutionDIR] the folder path that VS opened
 SET SolutionDIR=%CD%
 
 ECHO [%SolutionDIR%] DC_Universal_Build.bat started ....
@@ -65,8 +66,14 @@ IF %ERRORLEVEL% == 0 ( REM S17
 								ECHO [S16_523]
 								GOTO :S16_5XX_Build
 							) ELSE (
-								ECHO [S16_Others]
-								ECHO Any other project type? Please report this to the developer.
+								CALL :String_Contains "!SolutionDIR!", "8XX"
+								IF !ERRORLEVEL! == 0 (
+									ECHO [S16_8XX]
+									GOTO :S16_8XX_Build
+								) ELSE (
+									ECHO [S16_Others]
+									ECHO Any other project type? Please report this to the developer.
+								)
 							)
 						)
 					)
@@ -144,7 +151,8 @@ EXIT /B 0
 
 :S16_5XX_Build
 PUSHD "%SolutionDIR%\DevelopmentEnvironment\S16_523\EC600U_S16"
-CALL build_app.bat new EC600UEU_AB new_proj release
+REM CALL build_app.bat new EC600UEU_AB new_proj release
+CALL build_merge_pac.bat new EC600UEU_AB new_proj release
 
 IF %ERRORLEVEL% == 0 (
 	pslist | grep -i UpgradeDownload > nul
@@ -155,6 +163,33 @@ IF %ERRORLEVEL% == 0 (
 	)
 )
 EXIT /B 0
+
+
+:S16_8XX_Build
+SET EC600U_VER=EC600UEU_AB
+PUSHD "%SolutionDIR%\ApiInterface"
+CALL build_merge_pac.bat new %EC600U_VER% new_proj release
+POPD
+
+IF %ERRORLEVEL% == 0 (
+	ECHO Copying libapiinterface.a...
+	COPY /B "%SolutionDIR%\ApiInterface\out\new_proj_release\lib\libapiinterface.a" "%SolutionDIR%\Application\ql-application\Application\ApiLib\" /Y
+
+	PUSHD "%SolutionDIR%\Application"
+	CALL build_merge_pac.bat new %EC600U_VER% new_proj release
+	
+	IF !ERRORLEVEL! == 0 (
+		pslist | grep -i UpgradeDownload > nul
+		IF !ERRORLEVEL! EQU 1 (
+			START "" "%DC_WORKS_DIR%Tools\UPGRADEDOWNLOAD_R23.0.0001\Bin\UpgradeDownload.exe"
+		) ELSE (
+			IF !ERRORLEVEL! EQU 0 A:\APPs\RBTray\64bit\RBtray.exe --restore "UpgradeDownload - R23.0.0001"
+		)
+	)
+)
+
+EXIT /B 0
+
 
 
 :S17_Build
