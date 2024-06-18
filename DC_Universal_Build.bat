@@ -71,8 +71,14 @@ IF %ERRORLEVEL% == 0 ( REM S17
 									ECHO [S16_8XX]
 									GOTO :S16_8XX_Build
 								) ELSE (
-									ECHO [S16_Others]
-									ECHO Any other project type? Please report this to the developer.
+									CALL :String_Contains "!SolutionDIR!", "823"
+									IF !ERRORLEVEL! == 0 (
+										ECHO [S16_823]
+										GOTO :S16_8XX_Build
+									) ELSE (
+										ECHO [S16_Others]
+										ECHO Any other project type? Please report this to the developer.
+									)
 								)
 							)
 						)

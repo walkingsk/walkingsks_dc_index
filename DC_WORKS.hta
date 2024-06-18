@@ -1607,10 +1607,7 @@ function get_ss_url() {
 			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V1.0_240326.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240326]</b></a>
 		</td>
 		<td>
-			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240507]<br>16M RAM & 8M Flash</b></a>
-		</td>
-		<td>
-			<a onclick=ExplorerShellExecute("S16-5XX_V4.0_240514.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240514]<br>16M RAM & 8M Flash</b></a>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V3.0_240507.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240507]</b></a>
 		</td>
 	</tr>
 	<tr>
@@ -1641,6 +1638,25 @@ function get_ss_url() {
 			<img name="mid_versions" src="XYExplorer.ico" class="refico24" onclick=ExplorerXYplorer("S16-5XX_MP3_240507") />
 			<img name="mid_versions" src="Convert.ico" class="refico24" onclick=ExplorerAHKNppFileEncodingConvert("S16-5XX_MP3_240507\\DevelopmentEnvironment\\S16_523\\EC600U_S16\\ql-application\\Application") />
 		</td>
+	</tr>
+	<tr>
+		<td>
+		</td>
+		<td>
+		</td>
+		<td>
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<a onclick=ExplorerShellExecute("S16-5XX_V4.0_240514.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240514]<br>16M RAM & 8M Flash</b></a>
+		</td>
+	</tr>
+	<tr>
 		<td>
 			<img src="S16_523_BACK.png" class="refimg" onmouseover="this.src='S16_523_FRONT.png'" onmouseout="this.src='S16_523_BACK.png'" onclick=ExplorerShellExecute("S16-5XX_V4.0_240514.rar","",-1,"open",1) /><br>
 			<img src="Filezilla.ico" class="refico24" onclick=ExplorerFTP("S16_5XX") />
@@ -1652,12 +1668,6 @@ function get_ss_url() {
 		</td>
 	</tr>
 	<tr>
-		<td>
-		</td>
-		<td>
-		</td>
-		<td>
-		</td>
 		<td>
 			<!-- <input id="S16_5XX_lib_api_search" type="text" style="font-family:consolas;box-sizing border-box;width:300px" onkeydown="if (event.keyCode == 13) alert(this.value)"></input> -->
 			<input id="s16_5xx_lib_api_search" type="text" style="font-family:consolas;font-size:12px;box-sizing border-box;width:265px" oninput="document.getElementById('s16_5xx_lib_api_search_prompt').textContent=''" onkeydown="if (event.keyCode == 13) FindDisassmblyLibApi('S16_5XX','S16-5XX_MP3_240507',this.value); else if (event.keyCode == 27) this.value=''; else if (event.keyCode == 113) this.select();"></input><br>
@@ -2469,6 +2479,12 @@ Indic_16_GetData
 [unicode range] Latin Extended-B U+0180 to U+024F
 [unicode range] Latin Extended Additional U+1E00 to U+1EFF
 [unicode range] Combining Diacritical Marks U+0300 to U+036F
+
+
+A:\Open\vcpkg>.\bootstrap-vcpkg.bat -disableMetrics
+A:\Open\vcpkg>.\vcpkg search sqlite
+A:\Open\vcpkg>.\vcpkg install sqlite3
+A:\Open\vcpkg>.\vcpkg list
 </textarea>
 <br>
 <br>
@@ -2588,6 +2604,42 @@ right-click on a folder,<br>
 	<tr>
 		<td>
 			<img src="LA_Mobile_IPv4_Changed_After_Reboot.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="dc_get_versions.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="UART_CMD_GetDevInfo.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="dc_download_res.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="dc_fs_free_size_issue.png" />
 		</td>
 	</tr>
 </table>
