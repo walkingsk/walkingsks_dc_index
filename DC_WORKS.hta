@@ -353,9 +353,9 @@
 		DevMgrCOMs();
 	});
 	
-	
-<!-- https://docs.microsoft.com/en-us/previous-versions/tn-archive/ee692768(v=technet.10) -->
 </script>
+
+<!-- https://docs.microsoft.com/en-us/previous-versions/tn-archive/ee692768(v=technet.10) -->
 
 <hta:application // This block does not allow lines begin with "//", "//" can only be present after valid values
 	applicationname="梁罡的动联日志"
@@ -585,6 +585,7 @@ Const HKCC = &H80000005
 ScriptFullName = window.document.location.pathname
 ' MsgBox ScriptDIR
 ScriptDIR = ObjFS.GetParentFolderName(ScriptFullName)
+UserProfile= ObjShell.Environment("PROCESS").Item("UserProfile")
 SystemDrive= ObjShell.Environment("PROCESS").Item("SystemDrive")
 SystemRoot = ObjShell.Environment("PROCESS").Item("SystemRoot")
 ProcessorArch = ObjShell.Environment("PROCESS").Item("PROCESSOR_ARCHITECTURE")
@@ -1073,6 +1074,14 @@ End Sub
 
 Sub CopyStringToClipboard(String)
 	ObjShell.Run "powershell.exe -command ""Set-Clipboard -Value '" & String & "'""", 0, True
+End Sub
+
+Sub RunTodoistWithOptionalProxy(ProxyOption)
+	If ProxyOption = "none" Then
+		ObjShell.Exec UserProfile & "\AppData\Local\Programs\todoist\Todoist.exe"
+	ElseIf ProxyOption = "local_sq" Then
+		ObjShell.Exec UserProfile & "\AppData\Local\Programs\todoist\Todoist.exe --proxy-server=""127.0.0.1:10077"""
+	End If
 End Sub
 
 Sub Run5XXTracerUart()
@@ -1743,10 +1752,10 @@ function get_ss_url() {
 <table>
 	<tr>
 		<td>
-			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V4.0_240514.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240514]<br>16M RAM & 8M Flash</b></a>
+			<a name="mid_versions" onclick=ExplorerShellExecute("S16-5XX_V4.0_240514.rar","",-1,"open",1)><b>[S16_5XX_AUDIO_240514]<br>16M RAM + 8M Flash</b></a>
 		</td>
 		<td>
-			<a onclick=ExplorerShellExecute("S16-5XX_V5.0_240526.rar","",-1,"open",1)><b>[S16_5XX_MP3_240526]<br>16M RAM & 8M Flash</b></a>
+			<a onclick=ExplorerShellExecute("S16-5XX_V5.0_240526.rar","",-1,"open",1)><b>[S16_5XX_MP3_240526]<br>16M RAM + 8M Flash</b></a>
 		</td>
 	</tr>
 	<tr>
@@ -2211,39 +2220,7 @@ DTO = Data Transfer Object
 <br>
 <!-- <object data="./DC_WORKS.ini" width="300" height="200">Not Supported</object> -->
 <!-- <textarea style="width:400px;height:60px;font-size:16px;text-align:center" readonly > -->
-<textarea style="width:1500px;height:8000px;font-size:16px" readonly >
-CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
-if exist F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application RD /S /Q F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application
-copy /y F:\_____\S16_5xx\AppSource\Application_2023.9.20\ql-application F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\
-
-build_app.bat new EC600UEU_AB new_proj release
-
-
-build_app.bat new EC600UEU_AB
-
-
-CD /D D:\DC_WORKS\S11_523_15585\DevelopmentEnvironment\S11_523\EC600U_S11
-build_merge_pac.bat new EC600UCE_AC new_proj release
-
-
-CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
-build_app.bat new EC600UEU_AB new_proj release
-
-=======
-pause
-CLS
-exit /B
-
-
-build_app.bat ARG1 ARG2 ARG3 [ARG4]
-=====
-
-S16_523
-
-build_app.bat <BUILD_OPTIONS|r|new|clean|h> <QUEC_PROJ_NAME|EC600UEU_AB|EC600UCE_AC> <BUILD_PROJ_NAME|appimage> [release|debug]
-
-
-
+<textarea style="width:1500px;height:7000px;font-size:16px" readonly >
 
 debug_uart:DC_AlinkDeviceInfo 494 mqtt_client client_id: 55465230000153|securemode=3,signmethod=hmacsha1,timestamp=1537861252000,ext=1|
 debug_uart:DC_AlinkDeviceInfo 495 mqtt_client usr: 55465230000153&a1FYB8MCndh
@@ -2498,30 +2475,6 @@ debug_uart:DC_PrintfStr_d 19 Input PIN: 654321
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmY2M0YmZjNi1jY2ZkLTRiYjYtYTc1MS1lMGFmZjYzMjZkYjQiLCJTTiI6IjU1NDY1MjMwMDAwMTUzIiwiQXV0aFN0YXRlUGF5bWVudCI6IjIiLCJleHAiOjE3MTU4MzQ1NjYsImlzcyI6Im1pdHQtZGV2IiwiYXVkIjoibWl0dC1kZXYifQ.ojcYR5KEp6-YmhMe8FF-7h5ooj361Wmf-HK3velx81Y"
 }
 
-LMP 11.x – Bluetooth 5.2
-LMP 10.x – Bluetooth 5.1
-LMP  9.x – Bluetooth 5.0
-LMP  8.x – Bluetooth 4.2
-LMP  7.x – Bluetooth 4.1
-LMP  6.x – Bluetooth 4.0
-LMP  5.x – Bluetooth 3.0 + HS
-LMP  4.x – Bluetooth 2.1 + EDR
-LMP  3.x – Bluetooth 2.0 + EDR
-LMP  2.x – Bluetooth 1.2
-LMP  1.x – Bluetooth 1.1
-LMP  0.x – Bluetooth 1.0b
-
-ip.addr == 160.19.103.122
-
-ffmpeg -i input.mp4 -vf "transpose=1" output.mp4
-0: Rotate by 90 degrees counterclockwise and flip vertically.
-1: Rotate by 90 degrees clockwise.
-2: Rotate by 90 degrees counterclockwise.
-3: Rotate by 90 degrees clockwise and flip vertically.
-
-
-ffmpeg -i input.mp4 -ss 00:00:10 -to 00:00:30 -c:v copy -c:a copy output.mp4
-
 
 curl -L https://github.com/Alvin9999/new-pac/wiki/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7 -x127.0.0.1:9910 -oHTML.txt
 cat HTML.txt | grep ss://
@@ -2571,12 +2524,8 @@ debug_uart:DC_PrintfStr_d 19 playstring Received&c900.mp3|num95.mp3|mil.mp3|c900
 
 Dell Inspiron Fn Toggle: [Fn + Esc]
 
-aria2c --follow-torrent=mem "https://download.gimp.org/gimp/v2.10/windows/gimp-2.10.38-setup.exe.torrent"
-
 https://210.22.154.76/svn/dc_pos_project/接入项目
 https://192.168.100.19/svn/dc_pos_project/接入项目
-
-usr\bin\mintty.exe -p 489,215 --nodaemon -o AppID=GitForWindows.Bash -o AppLaunchCmd="A:\Program Files\Git\git-bash.exe" -o AppName="Git Bash" -i "A:\Program Files\Git\git-bash.exe" --store-taskbar-properties -- /usr/bin/bash --login -i
 
 
 svn ls --non-interactive --trust-server-cert-failures="unknown-ca,cn-mismatch,expired,not-yet-valid,other" https://210.22.154.76/svn/dc_mobile/trunk/Layer/Module/ApiInterface/S16/S_SpeakerPayment
@@ -2596,31 +2545,178 @@ Indic_16_GetData
 [unicode range] Combining Diacritical Marks U+0300 to U+036F
 
 
-A:\Open\vcpkg>.\bootstrap-vcpkg.bat -disableMetrics
-A:\Open\vcpkg>.\vcpkg search sqlite
-A:\Open\vcpkg>.\vcpkg install sqlite3
-A:\Open\vcpkg>.\vcpkg list
-
-
 
 With default settings, Cortex-M0+ does not connect to debug module when it's in sleep state. If you already programmed the firmware which puts it into sleep, use "connect under reset" with hardware reset or set the BOOT0 strap so that it wakes up with bootloader enabled. For your future adventures, put the MCU to sleep after 5..10 seconds (set SLEEPONEXIT in timer interrupt routine), so that you can connect the debugger after powering on the board. This works for me on L0, G0 and C0 series.
 https://community.st.com/t5/stm32cubeprogrammer-mcus/stm32cubeprogrammer-with-stm32f030c8-debug-in-low-power-mode/td-p/55472
 
 
-"A:\DC_WORKS\APPs\msys64\usr\bin\mintty"  -i "/msys2.ico" -t "MSYS2 MSYS" -p 489,215 "/usr/bin/bash" -l
-
-echo -e '#include <stdio.h>\nint main() { printf("Hello World!"); return 0; }' | gcc -x c -o output_executable -
-./output_executable.exe
-
-
-build_all.bat new EC600UEU_AB 1.0.0.2 NOVOLTE SINGLESIM release
-
-yt-dlp --extract-audio --audio-format mp3 --proxy 127.0.0.1:10077 https://www.youtube.com/watch?v=krB_XMDeBJo
 
 http://dcai.dynamicode.com.cn/dcprinter/wifi/ap?30000253
 
 ar rcs lib.a *.obj
 
+
+</textarea>
+<br>
+<br>
+<b>[S11 520 Persionalization CMD]</b>
+<br>
+<br>
+<textarea style="width:1000px;height:60px;font-size:16px;color:#28309F" wrap="on" readonly>
+02 00 00 80 94 00 03 24 01 00 03 33
+</textarea>
+<br>
+<br>
+<b>[the case only https_proxy works for pip]</b>
+<br>
+<br>
+<textarea style="width:1500px;height:400px;font-size:16px;color:#29846D" wrap="on" readonly>A:\Users\walkingsk\Downloads\INDEX\Debugger\J-Link\J-Link Software and Documentation Pack\7.84>set https_proxy=127.0.0.1:10077
+
+A:\Users\walkingsk\Downloads\INDEX\Debugger\J-Link\J-Link Software and Documentation Pack\7.84>python.exe -m pip install --upgrade pip
+Requirement already satisfied: pip in a:\program files\python311\lib\site-packages (24.1.2)
+Collecting pip
+  Using cached pip-24.2-py3-none-any.whl.metadata (3.6 kB)
+Downloading pip-24.2-py3-none-any.whl (1.8 MB)
+   ---------------------------------------- 1.8/1.8 MB 1.1 MB/s eta 0:00:00
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 24.1.2
+    Uninstalling pip-24.1.2:
+      Successfully uninstalled pip-24.1.2
+Successfully installed pip-24.2
+
+</textarea>
+<br>
+<br>
+<b>[S16 523 build_app.bat switches]</b>
+<br>
+<br>
+<textarea style="width:1500px;height:400px;font-size:16px;color:#AB7823" wrap="on" readonly>
+CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
+if exist F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application RD /S /Q F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\ql-application
+copy /y F:\_____\S16_5xx\AppSource\Application_2023.9.20\ql-application F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16\
+
+build_app.bat new EC600UEU_AB new_proj release
+build_app.bat new EC600UEU_AB
+
+
+build_app.bat <BUILD_OPTIONS|r|new|clean|h> <QUEC_PROJ_NAME|EC600UEU_AB|EC600UCE_AC> <BUILD_PROJ_NAME|appimage> [release|debug]
+
+CD /D D:\DC_WORKS\S11_523_15585\DevelopmentEnvironment\S11_523\EC600U_S11
+build_merge_pac.bat new EC600UCE_AC new_proj release
+
+
+CD /D F:\_____\S16_5xx\DevelopmentEnvironment\S16_523\EC600U_S16
+build_app.bat new EC600UEU_AB new_proj release
+
+</textarea>
+<br>
+<br>
+<b>[Quectel EC600U SDK build_all.bat switches]</b>
+<br>
+<br>
+<textarea style="width:1100px;height:60px;font-size:16px;color:#289364" wrap="on" readonly>
+build_all.bat new EC600UEU_AB 1.0.0.2 NOVOLTE SINGLESIM release
+
+</textarea>
+<br>
+<br>
+<b>[aria2c downloading via torrent]</b>
+<br>
+<br>
+<textarea style="width:1100px;height:60px;font-size:16px;color:#297836" wrap="on" readonly>
+aria2c --follow-torrent=mem "https://download.gimp.org/gimp/v2.10/windows/gimp-2.10.38-setup.exe.torrent"
+
+</textarea>
+<br>
+<br>
+<b>[bluetooth versions]</b>
+<br>
+<br>
+<textarea style="width:800px;height:300px;font-size:16px;color:#42A346" wrap="on" readonly>
+LMP 11.x – Bluetooth 5.2
+LMP 10.x – Bluetooth 5.1
+LMP  9.x – Bluetooth 5.0
+LMP  8.x – Bluetooth 4.2
+LMP  7.x – Bluetooth 4.1
+LMP  6.x – Bluetooth 4.0
+LMP  5.x – Bluetooth 3.0 + HS
+LMP  4.x – Bluetooth 2.1 + EDR
+LMP  3.x – Bluetooth 2.0 + EDR
+LMP  2.x – Bluetooth 1.2
+LMP  1.x – Bluetooth 1.1
+LMP  0.x – Bluetooth 1.0b
+
+</textarea>
+<br>
+<br>
+<b>[using ffmpeg to cut a video]</b>
+<br>
+<br>
+<textarea style="width:1100px;height:60px;font-size:16px;color:#798234" wrap="on" readonly>
+ffmpeg -i input.mp4 -ss 00:00:10 -to 00:00:30 -c:v copy -c:a copy output.mp4
+
+</textarea>
+<br>
+<br>
+<b>[using ffmpeg to rotate a video]</b>
+<br>
+<br>
+<textarea style="width:1100px;height:160px;font-size:16px;color:#9289A1" wrap="on" readonly>
+ffmpeg -i input.mp4 -vf "transpose=1" output.mp4
+0: Rotate by 90 degrees counterclockwise and flip vertically.
+1: Rotate by 90 degrees clockwise.
+2: Rotate by 90 degrees counterclockwise.
+3: Rotate by 90 degrees clockwise and flip vertically.
+
+</textarea>
+<br>
+<br>
+<b>[mintty.exe</b> <a href="https://mintty.github.io/mintty.1.html"><b>syntax</b></a><b>]</b>
+<br>
+<br>
+<textarea style="width:1100px;height:100px;font-size:16px;color:#98123D" wrap="on" readonly>
+"A:\DC_WORKS\APPs\msys64\usr\bin\mintty"  -i "/msys2.ico" -t "MSYS2 MSYS" -p 489,215 "/usr/bin/bash" -l
+
+</textarea>
+<br>
+<br>
+<b>[resource embedded in git-bash.exe]</b>
+<br>
+<br>
+<textarea style="width:1500px;height:120px;font-size:16px;color:#AF9812" wrap="on" readonly>
+usr\bin\mintty.exe -p 489,215 --nodaemon -o AppID=GitForWindows.Bash -o AppLaunchCmd="A:\Program Files\Git\git-bash.exe" -o AppName="Git Bash" -i "A:\Program Files\Git\git-bash.exe" --store-taskbar-properties -- /usr/bin/bash --login -i
+
+</textarea>
+<br>
+<br>
+<b>[yt-dlp downloading video and saving as mp3]</b>
+<br>
+<br>
+<textarea style="width:1100px;height:60px;font-size:16px;color:#2983D4" wrap="on" readonly>
+yt-dlp --extract-audio --audio-format mp3 --proxy 127.0.0.1:10077 https://www.youtube.com/watch?v=krB_XMDeBJo
+
+</textarea>
+<br>
+<br>
+<b>[gcc accepting stdout as input source]</b>
+<br>
+<br>
+<textarea style="width:1500px;height:80px;font-size:16px;color:#D23754" wrap="on" readonly>
+echo -e '#include <stdio.h>\nint main() { printf("Hello World!"); return 0; }' | gcc -x c -o output_executable -
+./output_executable.exe
+
+</textarea>
+<br>
+<br>
+<b>[vcpkg basics]</b>
+<br>
+<br>
+<textarea style="width:800px;height:120px;font-size:16px;color:#328975" wrap="on" readonly>
+A:\Open\vcpkg>.\bootstrap-vcpkg.bat -disableMetrics
+A:\Open\vcpkg>.\vcpkg search sqlite
+A:\Open\vcpkg>.\vcpkg install sqlite3
+A:\Open\vcpkg>.\vcpkg list
 
 </textarea>
 <br>
@@ -6546,9 +6642,19 @@ right-click on a folder,<br>
 		<td><img src="Google_Translate.ico" class="refico24"/></td>
 		<td><b>[Google Translate]</b></td>
 	</tr>
+	<tr>
+		<td><img src="Todoist.ico" onclick=RunTodoistWithOptionalProxy(document.getElementById('todoist_proxy_options').value) class="refico24"/></td>
+		<td><b>[Todoist]</b></td>
+		<td>
+			<select id="todoist_proxy_options" style="font-family:consolas" value="">
+				<option value="none">(None)</option>
+				<option value="local_sq">Local SQ</option>
+			</select>
+		</td>
+	</tr>
 </table>
 <br>
-<button onclick=get_ss_url()>Get SS://</button><br><textarea id="ss_url" style="height:45px;width:700px" value="123" readonly></textarea>
+<button onclick=get_ss_url()>Get SS://</button><br><textarea id="ss_url" style="height:45px;width:700px" value="empty" readonly></textarea>
 <br>
 <textarea style="display:none;height:1045px;width:700px"></textarea>
 <!-- visibility:hidden -> still take up space -->
@@ -6588,6 +6694,7 @@ right-click on a folder,<br>
 			<option value="Leisure/平生不晚 - 難卻.mp3">平生不晚 - 難卻</option>
 			<option value="Leisure/刘珂矣 - 半壶纱.mp3">刘珂矣 - 半壶纱</option>
 			<option value="Leisure/鳳凰傳奇 - 沙漠之戀.mp3">鳳凰傳奇 - 沙漠之戀</option>
+			<option value="Leisure/鳳凰傳奇 - 全是愛.mp3">鳳凰傳奇 - 全是愛</option>
 			<option value="Leisure/蔡依林 Jolin Tsai - 布拉格廣場.mp3">蔡依林 Jolin Tsai - 布拉格廣場</option>
 			<option value="Leisure/初音未來（初音ミク） 甩蔥歌.mp3">初音未來（初音ミク） 甩蔥歌</option>
 			<option value="Leisure/Candee! - Ein Kleines Lied (Around the World).mp3">Candee! - Ein Kleines Lied (Around the World)</option>
@@ -6596,8 +6703,45 @@ right-click on a folder,<br>
 			<option value="Leisure/烏蘭托婭 - 花橋流水.mp3">烏蘭托婭 - 花橋流水</option>
 			<option value="Leisure/烏蘭托婭 - 套馬桿.mp3">烏蘭托婭 - 套馬桿</option>
 			<option value="Leisure/烏蘭托婭 - 新套馬桿.mp3">烏蘭托婭 - 新套馬桿</option>
+			<option value="Leisure/Elfen Lied Opening - Lilium (Official Audio).mp3">Elfen Lied Opening - Lilium (Official Audio)</option>
 			<option value="DefaultHold.wma">DefaultHold</option>
-			<option value="A:\Users\walkingsk\Downloads\20240726穿梭靈界的科學家（二）什麼樣的人才能進入天堂天堂居然沒有時間伊曼紐史威登堡 未解之謎 天堂與地獄.mp4">20240726穿梭靈界的科學家（二）什麼樣的人才能進入天堂天堂居然沒有時間</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 13 $4cR1f1c14-_.wav">Danny Baranowsky - The Binding of Isaac - 13 $4cR1f1c14-_</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 22 ...Be Done.wav">Danny Baranowsky - The Binding of Isaac - 22 ...Be Done</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 25 End Times.wav">Danny Baranowsky - The Binding of Isaac - 25 End Times</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 33 Latter Days.wav">Danny Baranowsky - The Binding of Isaac - 33 Latter Days</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 34 Lament of the Angel.wav">Danny Baranowsky - The Binding of Isaac - 34 Lament of the Angel</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 36 Crusade.wav">Danny Baranowsky - The Binding of Isaac - 36 Crusade</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 38 Tomes.wav">Danny Baranowsky - The Binding of Isaac - 38 Tomes</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 39 The Wages of Faith.wav">Danny Baranowsky - The Binding of Isaac - 39 The Wages of Faith</option>
+			<option value="Leisure/Danny Baranowsky - The Binding of Isaac - 40 My Innermost Apocalypse.wav">Danny Baranowsky - The Binding of Isaac - 40 My Innermost Apocalypse</option>
+			<option value="Leisure/Rammstein - Mutter.flac">Rammstein - Mutter</option>
+			<option value="Leisure/(Mutter01) Rammstein - Mein Herz Brennt.wav">(Mutter01) Rammstein - Mein Herz Brennt</option>
+			<option value="Leisure/(Mutter02) Rammstein - Links 2 3 4.wav">(Mutter02) Rammstein - Links 2 3 4</option>
+			<option value="Leisure/(Mutter03) Rammstein - Sonne.wav">(Mutter03) Rammstein - Sonne</option>
+			<option value="Leisure/(Mutter04) Rammstein - Ich Will.wav">(Mutter04) Rammstein - Ich Will</option>
+			<option value="Leisure/(Mutter05) Rammstein - Feuer Frei !.wav">(Mutter05) Rammstein - Feuer Frei !</option>
+			<option value="Leisure/(Mutter06) Rammstein - Mutter.wav">(Mutter06) Rammstein - Mutter</option>
+			<option value="Leisure/(Mutter07) Rammstein - Spieluhr.wav">(Mutter07) Rammstein - Spieluhr</option>
+			<option value="Leisure/(Mutter08) Rammstein - Zwitter.wav">(Mutter08) Rammstein - Zwitter</option>
+			<option value="Leisure/(Mutter09) Rammstein - Rein Raus.wav">(Mutter09) Rammstein - Rein Raus</option>
+			<option value="Leisure/(Mutter10) Rammstein - Adios.wav">(Mutter10) Rammstein - Adios</option>
+			<option value="Leisure/(Mutter11) Rammstein - Nebel.wav">(Mutter11) Rammstein - Nebel</option>
+			<option value="Leisure/(Mutter12) Rammstein - Hallelujah.wav">(Mutter11) Rammstein - Hallelujah</option>
+			<option value="Leisure/(Rosenrot01) Rammstein - Benzin.wav">(Rosenrot01) Rammstein - Benzin</option>
+			<option value="Leisure/(Rosenrot02) Rammstein - Mann Gegen Mann.wav">(Rosenrot02) Rammstein - Mann Gegen Mann</option>
+			<option value="Leisure/(Rosenrot03) Rammstein - Rosenrot.wav">(Rosenrot03) Rammstein - Rosenrot</option>
+			<option value="Leisure/(Rosenrot04) Rammstein - Spring.wav">(Rosenrot04) Rammstein - Spring</option>
+			<option value="Leisure/(Rosenrot05) Rammstein - Wo Bist Du.wav">(Rosenrot05) Rammstein - Wo Bist Du</option>
+			<option value="Leisure/(Rosenrot06) Rammstein - Stirb Nicht Vor Mir (Don't Die Before I Do).wav">(Rosenrot06) Rammstein - Stirb Nicht Vor Mir (Don't Die Before I Do)</option>
+			<option value="Leisure/(Rosenrot07) Rammstein - Zerstцren.wav">(Rosenrot07) Rammstein - Zerstцren</option>
+			<option value="Leisure/(Rosenrot08) Rammstein - Hilf Mir.wav">(Rosenrot08) Rammstein - Hilf Mir</option>
+			<option value="Leisure/(Rosenrot09) Rammstein - Te Quiero Puta!.wav">(Rosenrot09) Rammstein - Te Quiero Puta!</option>
+			<option value="Leisure/(Rosenrot10) Rammstein - Feuer Und Wasser.wav">(Rosenrot10) Rammstein - Feuer Und Wasser</option>
+			<option value="Leisure/(Rosenrot11) Rammstein - Ein Lied.wav">(Rosenrot11) Rammstein - Ein Lied</option>
+			<option value="Leisure/(Reise, Reise03) Rammstein - Dalai Lama.wav">(Reise, Reise03) Rammstein - Dalai Lama</option>
+			<option value="Leisure/(Reise, Reise09) Rammstein - Stein Um Stein.wav">(Reise, Reise09) Rammstein - Stein Um Stein</option>
+			<option value="Leisure/(Reise, Reise11) Rammstein - Amour.wav">(Reise, Reise11) Rammstein - Amour</option>
+			<!-- <option value="A:\Users\walkingsk\Downloads\20240726穿梭靈界的科學家（二）什麼樣的人才能進入天堂天堂居然沒有時間伊曼紐史威登堡 未解之謎 天堂與地獄.mp4">20240726穿梭靈界的科學家（二）什麼樣的人才能進入天堂天堂居然沒有時間</option> -->
 		</select>
 	<br><br>
 	<object id="media_player" classid="CLSID:6BF52A52-394A-11D3-B153-00C04F79FAA6" width="320" height="45">
