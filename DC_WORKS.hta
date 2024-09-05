@@ -2559,6 +2559,65 @@ ar rcs lib.a *.obj
 </textarea>
 <br>
 <br>
+<b>[ActiveMQ 5.18.3 start and stop logs]</b>
+<br>
+<br>
+<textarea style="width:1500px;height:1200px;font-size:16px;color:#297384" wrap="on" readonly>
+A:\DC_WORKS\APPs\apache-activemq-5.18.3>Launch.bat
+Java Runtime: Microsoft 17.0.8.1 A:\Program Files (x86)\Android\openjdk\jdk-17.0.8.101-hotspot
+  Heap sizes: current=1048576k  free=1042942k  max=1048576k
+    JVM args: -Dcom.sun.management.jmxremote -Xms1G -Xmx1G -Djava.util.logging.config.file=logging.properties -Djava.security.auth.login.config=A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\conf\login.config -Dactivemq.classpath=A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\conf;A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\../conf;A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\../conf; -Dactivemq.home=A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\.. -Dactivemq.base=A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\.. -Dactivemq.conf=A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\conf -Dactivemq.data=A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data -Djolokia.conf=file:A:\\DC_WORKS\\APPs\\apache-activemq-5.18.3\\bin\\..\\conf\\jolokia-access.xml -Djava.io.tmpdir=A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data\tmp
+Extensions classpath:
+  [A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\lib,A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\lib\camel,A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\lib\optional,A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\lib\web,A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\lib\extra]
+ACTIVEMQ_HOME: A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..
+ACTIVEMQ_BASE: A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..
+ACTIVEMQ_CONF: A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\conf
+ACTIVEMQ_DATA: A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data
+Loading message broker from: xbean:activemq.xml
+ INFO | Using Persistence Adapter: KahaDBPersistenceAdapter[A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data\kahadb]
+ INFO | Starting Persistence Adapter: KahaDBPersistenceAdapter[A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data\kahadb]
+ INFO | Starting KahaDBStore
+ INFO | Opening MessageDatabase
+ INFO | Page File: A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data\kahadb\db.data. Recovering pageFile free list due to prior unclean shutdown..
+ INFO | KahaDB is version 7
+ INFO | Page File: A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data\kahadb\db.data. Recovered pageFile free list of size: 0
+ INFO | Starting Temp Data Store
+ INFO | PListStore:[A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data\localhost\tmp_storage] started
+ INFO | Starting Job Scheduler Store
+ INFO | Persistence Adapter successfully started
+ INFO | Apache ActiveMQ 5.18.3 (localhost, ID:DESKTOP-KOQCKTR-52312-1724657834579-0:1) is starting
+ INFO | Listening for connections at: tcp://DESKTOP-KOQCKTR:61616?maximumConnections=1000&wireFormat.maxFrameSize=104857600
+ INFO | Connector openwire started
+ INFO | Listening for connections at: amqp://DESKTOP-KOQCKTR:5672?maximumConnections=1000&wireFormat.maxFrameSize=104857600
+ INFO | Connector amqp started
+ INFO | Listening for connections at: stomp://DESKTOP-KOQCKTR:61613?maximumConnections=1000&wireFormat.maxFrameSize=104857600
+ INFO | Connector stomp started
+ INFO | Listening for connections at: mqtt://DESKTOP-KOQCKTR:1883?maximumConnections=1000&wireFormat.maxFrameSize=104857600
+ INFO | Connector mqtt started
+ INFO | Starting Jetty server
+ INFO | Creating Jetty connector
+ WARN | ServletContext@o.e.j.s.ServletContextHandler@1716e8c5{/,null,STARTING} has uncovered http methods for path: /
+ INFO | Listening for connections at ws://DESKTOP-KOQCKTR:61614?maximumConnections=1000&wireFormat.maxFrameSize=104857600
+ INFO | Connector ws started
+ INFO | Apache ActiveMQ 5.18.3 (localhost, ID:DESKTOP-KOQCKTR-52312-1724657834579-0:1) started
+ INFO | For help or more information please see: http://activemq.apache.org
+ INFO | ActiveMQ WebConsole available at http://127.0.0.1:8161/
+ INFO | ActiveMQ Jolokia REST API available at http://127.0.0.1:8161/api/jolokia/
+ INFO | Apache ActiveMQ 5.18.3 (localhost, ID:DESKTOP-KOQCKTR-52312-1724657834579-0:1) is shutting down
+ INFO | Connector openwire stopped
+ INFO | Connector amqp stopped
+ INFO | Connector stomp stopped
+ INFO | Connector mqtt stopped
+ INFO | Connector ws stopped
+ INFO | PListStore:[A:\DC_WORKS\APPs\apache-activemq-5.18.3\bin\..\data\localhost\tmp_storage] stopped
+ INFO | Stopping async queue tasks
+ INFO | Stopping async topic tasks
+ INFO | Stopped KahaDB
+ INFO | Apache ActiveMQ 5.18.3 (localhost, ID:DESKTOP-KOQCKTR-52312-1724657834579-0:1) uptime 22 minutes
+ INFO | Apache ActiveMQ 5.18.3 (localhost, ID:DESKTOP-KOQCKTR-52312-1724657834579-0:1) is shutdown
+</textarea>
+<br>
+<br>
 <b>[S11 520 Persionalization CMD]</b>
 <br>
 <br>
@@ -2567,7 +2626,7 @@ ar rcs lib.a *.obj
 </textarea>
 <br>
 <br>
-<b>[the case only https_proxy works for pip]</b>
+<b>[the case https_proxy works for pip]</b>
 <br>
 <br>
 <textarea style="width:1500px;height:400px;font-size:16px;color:#29846D" wrap="on" readonly>A:\Users\walkingsk\Downloads\INDEX\Debugger\J-Link\J-Link Software and Documentation Pack\7.84>set https_proxy=127.0.0.1:10077
@@ -6469,6 +6528,28 @@ right-click on a folder,<br>
 	<tr>
 		<td>
 			<img src="cygwin_build_x64.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<b>[S16 523 EU PCB V1.1]</b>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="S16_523_Masarat_Libya_Kbd_Trap_V1.1.png" />
+		</td>
+	</tr>
+</table>
+<br>
+<br>
+<b>[S16 523 EU PCB V1.3]</b>
+<br>
+<table>
+	<tr>
+		<td>
+			<img src="S16_523_Masarat_Libya_Kbd_Trap_V1.3.png" />
 		</td>
 	</tr>
 </table>
